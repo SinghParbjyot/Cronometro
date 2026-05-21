@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Carrera Policías Zaragoza 2026</title>
+
+  <!--
+    ============================================================
+    FUENTES TIPOGRÁFICAS
+    Deportivas y legibles a distancia en pantallas LED grandes.
+    Requieren conexión a internet; si no hay conexión se usan
+    las fuentes del sistema (Impact, Arial Narrow).
+    ============================================================
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!--
+    ============================================================
+    PANTALLA PRINCIPAL
+    Diseñada para 1920×1080 (LED Full HD).
+    Para ver a pantalla completa en el navegador, pulsa F11
+    o la tecla F desde la propia página.
+    ============================================================
+  -->
+  <div class="screen" id="screen">
+
+    <!-- ========================================================
+         CABECERA: LOGOS + TÍTULO PRINCIPAL
+         ======================================================== -->
+    <header class="header">
+
+      <!-- ── LOGOS IZQUIERDA ──────────────────────────────────
+           Añade/quita logo-box según los logos disponibles.
+           IMÁGENES esperadas en /assets/ :
+             • logo-policia-local.png  → Escudo Policía Local
+             • logo-ayuntamiento.png   → Logo Ayuntamiento Zaragoza
+      ─────────────────────────────────────────────────────── -->
+      <div class="logo-group logo-left">
+
+        <!-- Logo: Policía Local Zaragoza -->
+        <div class="logo-box" title="Policía Local Zaragoza">
+          <img
+            src="assets/LOGO CRONOLIMITS.png"
+            alt="Policía Local Zaragoza"
+            class="logo-img logo-white"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="logo-fallback">
+            <span>Policía<br>Local</span>
+          </div>
+        </div>
+
+        <!-- Logo: Ayuntamiento de Zaragoza -->
+        <div class="logo-box" title="Ayuntamiento de Zaragoza">
+          <img
+            src="assets/LOGO AYUNTAMIENTO ZARAGOZA.png"
+            alt="Ayuntamiento de Zaragoza"
+            class="logo-img logo-white"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="logo-fallback">
+            <span>Ayuntamiento<br>Zaragoza</span>
+          </div>
+        </div>
+
+      </div><!-- /logo-left -->
+
+      <!-- ── TÍTULO CENTRAL ───────────────────────────────────
+           CAMBIA EL TEXTO AQUÍ si el nombre del evento cambia.
+      ─────────────────────────────────────────────────────── -->
+      <div class="header-center">
+        <div class="title-wrapper">
+
+          <!-- Línea decorativa superior -->
+          <div class="title-deco-line"></div>
+
+          <!-- Subtítulo (debajo de la línea) -->
+          <p class="header-subtitle">POLICÍA LOCAL DE ZARAGOZA</p>
+
+          <!-- Título principal del evento -->
+          <h1 class="main-title">
+            <span class="title-word">CARRERA</span>
+            <span class="title-sep-dot" aria-hidden="true">·</span>
+            <span class="title-year">2026</span>
+          </h1>
+
+          <!-- Línea decorativa inferior -->
+          <div class="title-deco-line"></div>
+
+        </div>
+      </div><!-- /header-center -->
+
+      <!-- ── LOGOS DERECHA ─────────────────────────────────────
+           IMÁGENES esperadas en /assets/ :
+             • logo-carrera.png      → Logo oficial de la carrera
+             • logo-colaborador.png  → Colaborador / patrocinador principal
+      ─────────────────────────────────────────────────────── -->
+      <div class="logo-group logo-right">
+
+        <!-- Logo: Carrera / Evento -->
+        <div class="logo-box" title="Logo de la Carrera">
+          <img
+            src="assets/LOGO AYUNTAMIENTO ZARAGOZA.png"
+            alt="Logo Carrera Policías Zaragoza 2026"
+            class="logo-img logo-white"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="logo-fallback">
+            <span>Logo<br>Carrera</span>
+          </div>
+        </div>
+
+        <!-- Logo: Colaborador principal -->
+        <div class="logo-box" title="Colaborador Principal">
+          <img
+            src="assets/LOGO CRONOLIMITS.png"
+            alt="Colaborador Principal"
+            class="logo-img logo-white"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="logo-fallback">
+            <span>Colabora</span>
+          </div>
+        </div>
+
+      </div><!-- /logo-right -->
+
+    </header><!-- /header -->
+
+
+    <!-- ========================================================
+         LÍNEA DE VELOCIDAD ANIMADA (efecto deportivo superior)
+         ======================================================== -->
+    <div class="speed-line-wrap" aria-hidden="true">
+      <div class="speed-bar"></div>
+      <div class="speed-glow"></div>
+    </div>
+
+
+    <!-- ========================================================
+         ZONA CENTRAL: ESTADO DE CARRERA + CONTADOR
+         ======================================================== -->
+    <main class="main">
+
+      <!-- Estado de la carrera -->
+      <!-- Las clases 'running' y 'finished' son gestionadas por script.js -->
+      <div class="status-area">
+        <div class="status-badge" id="status-badge">
+          <span class="status-icon" id="status-icon" aria-hidden="true">⏳</span>
+          <span class="status-text" id="status-text">CUENTA ATRÁS</span>
+        </div>
+      </div>
+
+      <!-- Contador principal (días · horas · minutos · segundos) -->
+      <!-- Los valores se actualizan desde script.js cada segundo -->
+      <div class="counter-panel">
+      <div class="counter-row" id="counter-row">
+
+        <!-- Bloque: DÍAS -->
+        <div class="counter-block" id="block-days">
+          <div class="counter-digit" id="days">00</div>
+          <div class="counter-label">DÍAS</div>
+        </div>
+
+        <div class="counter-sep" aria-hidden="true">:</div>
+
+        <!-- Bloque: HORAS -->
+        <div class="counter-block" id="block-hours">
+          <div class="counter-digit" id="hours">00</div>
+          <div class="counter-label">HORAS</div>
+        </div>
+
+        <div class="counter-sep" aria-hidden="true">:</div>
+
+        <!-- Bloque: MINUTOS -->
+        <div class="counter-block" id="block-minutes">
+          <div class="counter-digit" id="minutes">00</div>
+          <div class="counter-label">MIN</div>
+        </div>
+
+        <div class="counter-sep" aria-hidden="true">:</div>
+
+        <!-- Bloque: SEGUNDOS -->
+        <div class="counter-block" id="block-seconds">
+          <div class="counter-digit" id="seconds">00</div>
+          <div class="counter-label">SEG</div>
+        </div>
+
+      </div><!-- /counter-row -->
+      </div><!-- /counter-panel -->
+
+      <!-- Información de fecha (visible solo durante cuenta atrás) -->
+      <div class="race-info" id="race-info">
+        <span class="race-info-label">Fecha de inicio:</span>
+        <span class="race-info-value" id="race-date-display">24 de Mayo de 2026 · 09:00 h</span>
+      </div>
+
+      <!-- ========================================================
+           SALIDAS DE LA CARRERA
+           Modifica aquí las horas, distancias y etiquetas.
+           ======================================================== -->
+      <div class="salidas-section" id="salidas-section">
+
+        <div class="salidas-title">Salidas de la carrera</div>
+
+        <div class="salidas-row">
+
+          <!-- Salida 1: 09:00 — 5K -->
+          <div class="salida-card salida-5k">
+            <div class="salida-hora">09:00</div>
+            <div class="salida-inner-sep"></div>
+            <div class="salida-distancia">5K</div>
+            <div class="salida-tag">Primera salida</div>
+          </div>
+
+          <!-- Salida 2: 09:30 — 10K -->
+          <div class="salida-card salida-10k">
+            <div class="salida-hora">09:30</div>
+            <div class="salida-inner-sep"></div>
+            <div class="salida-distancia">10K</div>
+            <div class="salida-tag">Segunda salida</div>
+          </div>
+
+          <!-- Salida 3: 11:00 — 1K Familiar -->
+          <div class="salida-card salida-familiar">
+            <div class="salida-hora">11:00</div>
+            <div class="salida-inner-sep"></div>
+            <div class="salida-distancia">1K · Familiar</div>
+            <div class="salida-tag">Tercera salida</div>
+          </div>
+
+        </div><!-- /salidas-row -->
+      </div><!-- /salidas-section -->
+
+    </main><!-- /main -->
+
+
+    <!-- ========================================================
+         LÍNEA DE VELOCIDAD ANIMADA INFERIOR
+         ======================================================== -->
+    <div class="speed-line-wrap speed-line-bottom" aria-hidden="true">
+      <div class="speed-bar reverse"></div>
+      <div class="speed-glow reverse"></div>
+    </div>
+
+
+    <!-- ========================================================
+         PIE DE PÁGINA: CIUDAD · MENSAJE · PATROCINADORES
+         ======================================================== -->
+    <footer class="footer">
+
+      <!-- ── PATROCINADORES IZQUIERDA ──────────────────────────
+           IMÁGENES esperadas en /assets/ :
+             • sponsor-1.png   → Patrocinador 1
+             • sponsor-2.png   → Patrocinador 2
+           Añade o elimina sponsor-box según sea necesario.
+      ─────────────────────────────────────────────────────── -->
+      <div class="sponsors sponsors-left">
+
+        <div class="sponsor-box" title="Patrocinador 1">
+          <img
+            src="assets/ESCUDO POLICIA BLANCO.pnG"
+            alt="Patrocinador 1"
+            class="sponsor-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="logo-fallback small">
+            <span>Patrocinador</span>
+          </div>
+        </div>
+
+        <div class="sponsor-box" title="Patrocinador 2">
+          <img
+            src="assets/LOGO POLICIA BLANCO.png "
+            alt="Patrocinador 2"
+            class="sponsor-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="logo-fallback small">
+            <span>Patrocinador</span>
+          </div>
+        </div>
+
+      </div><!-- /sponsors-left -->
+
+      <div class="sponsors sponsors-right">
+
+        <div class="sponsor-box" title="Colaborador 1">
+          <img
+            src="assets/LOGO POLICIA BLANCO.png"
+            alt="Colaborador 1"
+            class="sponsor-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          <div class="logo-fallback small">
+            <span>Colabora</span>
+          </div>
+        </div>
+
+        <div class="sponsor-box" title="Colaborador 2">
+          <img
+            src="assets/ESCUDO POLICIA BLANCO.png"
+            alt="Colaborador 2"
+            class="sponsor-img"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+          
+      </div><!-- /sponsors-right -->
+
+    </footer><!-- /footer -->
+
+
+    <!-- ========================================================
+         CONTROLES MANUALES (OCULTOS POR DEFECTO)
+
+         Para mostrarlos:
+           · Pulsa la tecla  C  en el teclado
+           · O pon SHOW_CONTROLS = true en script.js
+         ======================================================== -->
+    <div class="manual-controls" id="manual-controls">
+      <span class="controls-label">Controles</span>
+      <button class="ctrl-btn" id="btn-start"  onclick="manualStart()">▶ Iniciar</button>
+      <button class="ctrl-btn" id="btn-pause"  onclick="togglePause()">⏸ Pausar</button>
+      <button class="ctrl-btn" id="btn-reset"  onclick="resetTimer()">↺ Reiniciar</button>
+      <button class="ctrl-btn ctrl-close" onclick="toggleControlsVisibility()">✕ Cerrar</button>
+    </div>
+
+  </div><!-- /screen -->
+
+  <script src="script.js"></script>
+</body>
+</html>

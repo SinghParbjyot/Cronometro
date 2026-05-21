@@ -1,0 +1,1108 @@
+/*
+  ============================================================
+  CARRERA POLICÍAS ZARAGOZA 2026
+  styles.css — Estilos principales
+
+  PALETA DE COLORES (cambia las variables en :root):
+    --c-bg-deep    #001122   Fondo más oscuro
+    --c-bg-main    #002244   Azul oscuro principal
+    --c-accent     #005BBB   Azul medio
+    --c-bright     #007BFF   Azul brillante
+    --c-electric   #38BDF8   Azul eléctrico / cian
+    --c-white      #FFFFFF   Blanco
+    --c-silver     #B8D4F0   Plata / azul claro
+
+  TIPOGRAFÍA:
+    Usa Oswald + Rajdhani (Google Fonts) si hay conexión.
+    Fallback: Impact → Arial Narrow → Arial.
+  ============================================================
+*/
+
+/* ── RESET ──────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── VARIABLES CSS ─────────────────────────────────────── */
+/* CAMBIA AQUÍ para modificar toda la paleta de un golpe    */
+:root {
+  /* Fondos */
+  --c-bg-deep:      #000e1f;
+  --c-bg-main:      #001d3d;
+  --c-bg-card:      rgba(0, 18, 45, 0.88);
+  --c-bg-header:    rgba(0, 25, 60, 0.95);
+  --c-bg-footer:    rgba(0, 22, 55, 0.95);
+
+  /* Azules */
+  --c-accent:       #005BBB;
+  --c-bright:       #1a7fe8;
+  --c-electric:     #38BDF8;
+  --c-electric-dim: rgba(56, 189, 248, 0.5);
+
+  /* Neutros */
+  --c-white:        #FFFFFF;
+  --c-silver:       #b0ccee;
+  --c-dim:          rgba(176, 204, 238, 0.55);
+
+  /* Estados de carrera */
+  --c-countdown:    #38BDF8;       /* cian — cuenta atrás */
+  --c-running:      #00e676;       /* verde — en curso     */
+  --c-finished:     #FFB300;       /* ámbar — finalizada   */
+
+  /* Tipografía */
+  --font-display:   'Oswald', 'Rajdhani', 'Impact', 'Arial Narrow', Arial, sans-serif;
+  --font-body:      'Rajdhani', 'Oswald', Arial, sans-serif;
+
+  /* Sombras glow reutilizables */
+  --glow-electric:
+    0 0 10px rgba(56, 189, 248, 0.8),
+    0 0 25px rgba(56, 189, 248, 0.5),
+    0 0 50px rgba(0, 123, 255, 0.25);
+  --glow-card:
+    0 0 30px rgba(56, 189, 248, 0.15),
+    0 4px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* ── HTML / BODY ────────────────────────────────────────── */
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;          /* Pantalla completa sin scroll */
+  font-family: var(--font-body);
+  color: var(--c-white);
+  background-color: var(--c-bg-deep);
+}
+
+/* ============================================================
+   PANTALLA PRINCIPAL
+   ============================================================ */
+.screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+
+  /*
+    FONDO:
+    Capa 1 → Líneas diagonales sutiles (patrón dinámico)
+    Capa 2 → Gradiente radial central (profundidad)
+    Capa 3 → Gradiente lineal base
+
+    PARA USAR IMAGEN DE FONDO:
+    Descomenta la línea url() y coloca assets/fondo.jpg
+  */
+  background-color: var(--c-bg-deep);
+  /* IMAGEN DE FONDO: coloca el archivo en assets/FONDO.jpg */
+  background-image: url('assets/FONDO.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+/* Overlay sobre la imagen: oscurece y añade el tono azul corporativo.
+   Sube el último valor de rgba() para más oscuridad, bájalo para menos. */
+.screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      155deg,
+      rgba(0, 8, 30, 0.58) 0%,
+      rgba(0, 22, 62, 0.50) 50%,
+      rgba(0, 8, 30, 0.58) 100%
+    ),
+    repeating-linear-gradient(
+      -52deg,
+      transparent,
+      transparent 55px,
+      rgba(0, 91, 187, 0.045) 55px,
+      rgba(0, 91, 187, 0.045) 110px
+    );
+}
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5vw;
+  height: 15vh;
+  min-height: 85px;
+  max-height: 155px;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+
+  background: linear-gradient(
+    180deg,
+    var(--c-bg-header) 0%,
+    rgba(0, 28, 68, 0.88) 100%
+  );
+  border-bottom: 2px solid rgba(56, 189, 248, 0.28);
+
+  /* Efecto de luz interna en el borde superior */
+  box-shadow:
+    inset 0 1px 0 rgba(56, 189, 248, 0.15),
+    0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Grupo de logos (izquierda / derecha) ───────────────── */
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 1.8vw;
+  flex: 0 0 auto;
+  max-width: 28vw;
+}
+
+/* ── Caja individual de logo ────────────────────────────── */
+.logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 82px;
+  min-width: 60px;
+  max-width: 170px;
+}
+
+.logo-img {
+  max-height: 78px;
+  max-width: 160px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  /* Sombra sutil para logos sobre fondo oscuro */
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.55));
+  transition: filter 0.3s ease;
+}
+
+.logo-img:hover {
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
+}
+
+/* Versión blanca del logo — aplicar clase 'logo-white' al <img>.
+   Convierte logos de colores en blanco puro sobre fondo oscuro. */
+.logo-white {
+  filter: brightness(0) invert(1) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
+}
+
+.logo-white:hover {
+  filter: brightness(0) invert(1) drop-shadow(0 0 14px rgba(255, 255, 255, 0.45));
+}
+
+/* Placeholder visible cuando la imagen no existe.
+   Por defecto oculto; el atributo onerror de <img> lo muestra. */
+.logo-fallback {
+  display: none;   /* se activa con display:flex desde onerror */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 72px;
+  min-width: 72px;
+  padding: 6px 10px;
+  border: 2px dashed rgba(56, 189, 248, 0.35);
+  border-radius: 8px;
+  background: rgba(0, 91, 187, 0.12);
+  color: rgba(56, 189, 248, 0.65);
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+}
+
+.logo-fallback.small {
+  height: 46px;
+  min-width: 58px;
+  font-size: 0.52rem;
+}
+
+/* ── Título central ─────────────────────────────────────── */
+.header-center {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 2vw;
+}
+
+.title-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Líneas decorativas arriba/abajo del título */
+.title-deco-line {
+  width: 65%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--c-electric-dim) 20%,
+    var(--c-electric) 50%,
+    var(--c-electric-dim) 80%,
+    transparent 100%
+  );
+  border-radius: 2px;
+}
+
+/* Subtítulo encima del nombre del evento */
+.header-subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(0.55rem, 1.15vw, 1.05rem);
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  color: var(--c-electric);
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+
+/* Título principal del evento */
+.main-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+}
+
+.title-word {
+  font-size: clamp(1.6rem, 4.2vw, 4.8rem);
+  color: var(--c-white);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+}
+
+.title-sep-dot {
+  font-size: clamp(1.2rem, 2.5vw, 2.8rem);
+  color: var(--c-electric-dim);
+}
+
+/* Año: elemento más destacado del título */
+.title-year {
+  font-size: clamp(1.6rem, 4.2vw, 4.8rem);
+  color: var(--c-electric);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: var(--glow-electric);
+  animation: title-glow-pulse 3.5s ease-in-out infinite alternate;
+}
+
+/* ============================================================
+   LÍNEAS DE VELOCIDAD ANIMADAS
+   ============================================================ */
+.speed-line-wrap {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.speed-line-wrap.speed-line-bottom {
+  height: 3px;
+}
+
+.speed-bar {
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--c-accent) 20%,
+    var(--c-electric) 50%,
+    var(--c-white) 65%,
+    var(--c-electric) 80%,
+    var(--c-accent) 90%,
+    transparent 100%
+  );
+  animation: speed-slide 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.speed-glow {
+  position: absolute;
+  top: -4px;
+  left: -75%;
+  width: 28%;
+  height: 12px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(56, 189, 248, 0.55) 0%,
+    transparent 70%
+  );
+  animation: speed-slide 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 0.04s;
+}
+
+.speed-bar.reverse,
+.speed-glow.reverse {
+  animation-direction: reverse;
+}
+
+/* ============================================================
+   ZONA PRINCIPAL: ESTADO + CONTADOR
+   ============================================================ */
+.main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1.5vh, 1.8rem);
+  padding: 1vh 3vw;
+  position: relative;
+  z-index: 10;
+}
+
+/* ── Badge de estado de carrera ─────────────────────────── */
+.status-area {
+  display: flex;
+  justify-content: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.45em 2.2em;
+  border-radius: 50px;
+  border: 2px solid var(--c-countdown);
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--c-countdown);
+  font-family: var(--font-display);
+  font-size: clamp(0.85rem, 1.7vw, 1.55rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  transition: border-color 0.5s ease, color 0.5s ease,
+              background 0.5s ease, box-shadow 0.5s ease;
+}
+
+.status-icon {
+  font-size: 1.15em;
+  line-height: 1;
+}
+
+/* Estado: EN CURSO */
+.status-badge.running {
+  border-color: var(--c-running);
+  background: rgba(0, 230, 118, 0.09);
+  color: var(--c-running);
+  box-shadow:
+    0 0 18px rgba(0, 230, 118, 0.35),
+    0 0 40px rgba(0, 230, 118, 0.12);
+  animation: badge-pulse-running 1.8s ease-in-out infinite;
+}
+
+/* Estado: FINALIZADA */
+.status-badge.finished {
+  border-color: var(--c-finished);
+  background: rgba(255, 179, 0, 0.09);
+  color: var(--c-finished);
+  box-shadow:
+    0 0 18px rgba(255, 179, 0, 0.35),
+    0 0 40px rgba(255, 179, 0, 0.1);
+  animation: none;
+}
+
+/* ── Panel del contador (marco visual con efecto cristal) ── */
+.counter-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: clamp(1rem, 2.2vh, 2.5rem) clamp(1.5rem, 4vw, 6rem);
+  background:
+    radial-gradient(ellipse 65% 55% at 50% 50%, rgba(0, 70, 150, 0.14) 0%, transparent 70%),
+    rgba(0, 5, 20, 0.52);
+  border: 1px solid rgba(56, 189, 248, 0.14);
+  border-radius: 22px;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  box-shadow:
+    0 0 70px rgba(0, 30, 90, 0.45),
+    inset 0 0 80px rgba(0, 60, 130, 0.10);
+  overflow: hidden;
+}
+
+/* ── Fila del contador ──────────────────────────────────── */
+.counter-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.4rem, 1.2vw, 1.8rem);
+  width: 100%;
+  padding: 0 1vw;
+}
+
+/* Efecto glow en los bloques cuando la carrera está en curso */
+.counter-row.running .counter-block {
+  border-color: rgba(0, 230, 118, 0.35);
+  box-shadow:
+    0 0 25px rgba(0, 230, 118, 0.15),
+    0 4px 30px rgba(0, 0, 0, 0.55),
+    inset 0 0 25px rgba(0, 230, 118, 0.06);
+}
+
+/* Bloques atenuados al finalizar */
+.counter-row.finished .counter-block {
+  border-color: rgba(255, 179, 0, 0.3);
+  box-shadow:
+    0 0 20px rgba(255, 179, 0, 0.12),
+    0 4px 30px rgba(0, 0, 0, 0.55);
+}
+
+/* ── Bloque individual del contador ─────────────────────── */
+.counter-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+
+  /* Tamaño responsive, prioridad 1920px */
+  width: clamp(95px, 18.5vw, 288px);
+  height: clamp(105px, 20vh, 248px);
+
+  /* Estilo cristal / LED — con backdrop-filter para efecto sobre imagen de fondo */
+  background: linear-gradient(
+    180deg,
+    rgba(0, 22, 55, 0.93) 0%,
+    rgba(0, 10, 35, 0.97) 100%
+  );
+  border: 2px solid rgba(56, 189, 248, 0.38);
+  border-radius: 14px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 0 28px rgba(56, 189, 248, 0.18),
+    0 6px 36px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 0 28px rgba(0, 91, 187, 0.13);
+
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+/* Barra de acento superior (LED azul eléctrico) */
+.counter-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 8%; right: 8%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--c-electric) 25%, #fff 50%, var(--c-electric) 75%, transparent);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.9), 0 0 4px rgba(255, 255, 255, 0.5);
+  border-radius: 0 0 4px 4px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Reflejo sutil de cristal en el tercio superior */
+.counter-block::after {
+  content: '';
+  position: absolute;
+  inset: 5px 0 62% 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Dígito principal del bloque ────────────────────────── */
+.counter-digit {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 9.5vw, 11rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--c-white);
+
+  /* Glow LED en los números */
+  text-shadow:
+    0 0 8px rgba(56, 189, 248, 0.9),
+    0 0 22px rgba(56, 189, 248, 0.6),
+    0 0 50px rgba(0, 123, 255, 0.32);
+
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Números en estado "en curso": tono verde */
+.counter-row.running .counter-digit {
+  text-shadow:
+    0 0 8px rgba(0, 230, 118, 0.8),
+    0 0 20px rgba(0, 230, 118, 0.45),
+    0 0 40px rgba(0, 200, 100, 0.2);
+}
+
+/* Números en estado "finalizada": ámbar */
+.counter-row.finished .counter-digit {
+  text-shadow:
+    0 0 8px rgba(255, 179, 0, 0.8),
+    0 0 20px rgba(255, 179, 0, 0.45);
+}
+
+/* ── Etiqueta debajo del número ─────────────────────────── */
+.counter-label {
+  font-family: var(--font-display);
+  font-size: clamp(0.5rem, 1.1vw, 1.02rem);
+  font-weight: 700;
+  letter-spacing: 0.38em;
+  color: var(--c-electric);
+  text-transform: uppercase;
+  opacity: 0.68;
+  position: relative;
+  padding-top: 0.3em;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Línea divisoria entre el número y la etiqueta */
+.counter-label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), transparent);
+}
+
+/* Bloque de segundos: pulso visual tic-tac */
+#block-seconds {
+  animation: seconds-beat 1s ease-in-out infinite;
+}
+
+.counter-row.finished #block-seconds {
+  animation: none;
+}
+
+/* ── Separadores : ──────────────────────────────────────── */
+.counter-sep {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 7.5vw, 9rem);
+  font-weight: 700;
+  color: var(--c-electric);
+  line-height: 1;
+  margin-bottom: 0.4em;       /* Alinear visualmente con los números */
+  text-shadow: var(--glow-electric);
+  animation: sep-blink 1s step-end infinite;
+}
+
+/* Separadores durante cuenta atrás y en curso: parpadean */
+/* Durante finalizada: apagados */
+.counter-row.finished .counter-sep {
+  animation: none;
+  opacity: 0.35;
+}
+
+/* ── Información de fecha ───────────────────────────────── */
+.race-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-display);
+  font-size: clamp(0.65rem, 1.3vw, 1.15rem);
+  color: var(--c-silver);
+  letter-spacing: 0.1em;
+  opacity: 0.72;
+  transition: opacity 0.6s ease;
+}
+
+.race-info.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.race-info-label {
+  font-weight: 400;
+  color: var(--c-dim);
+}
+
+.race-info-value {
+  font-weight: 700;
+  color: var(--c-electric);
+}
+
+/* ============================================================
+   PIE DE PÁGINA
+   ============================================================ */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5vw;
+  height: 10vh;
+  min-height: 58px;
+  max-height: 100px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+
+  background: linear-gradient(
+    0deg,
+    var(--c-bg-footer) 0%,
+    rgba(0, 26, 65, 0.88) 100%
+  );
+  border-top: 2px solid rgba(56, 189, 248, 0.25);
+  box-shadow:
+    inset 0 -1px 0 rgba(56, 189, 248, 0.1),
+    0 -4px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Grupos de patrocinadores ───────────────────────────── */
+.sponsors {
+  display: flex;
+  align-items: center;
+  gap: 1.8vw;
+  flex: 0 0 auto;
+  max-width: 24vw;
+}
+
+.sponsor-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  min-width: 48px;
+  max-width: 115px;
+}
+
+.sponsor-img {
+  max-height: 48px;
+  max-width: 105px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.5));
+  opacity: 0.88;
+  transition: opacity 0.3s ease;
+}
+
+.sponsor-img:hover {
+  opacity: 1;
+}
+
+/* ── Centro del footer ──────────────────────────────────── */
+.footer-center {
+  flex: 1 1 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: clamp(0.9rem, 2.3vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--c-white);
+  text-transform: uppercase;
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
+}
+
+/* Mensaje configurable (FOOTER_MESSAGE en script.js) */
+.footer-message {
+  font-family: var(--font-display);
+  font-size: clamp(0.55rem, 1.1vw, 0.95rem);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--c-electric);
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+
+.footer-sub {
+  font-family: var(--font-body);
+  font-size: clamp(0.45rem, 0.82vw, 0.72rem);
+  color: var(--c-dim);
+  letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   CONTROLES MANUALES (OCULTOS POR DEFECTO)
+   Para activarlos: clase 'visible' en #manual-controls
+   ============================================================ */
+.manual-controls {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;           /* hidden by default */
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  background: rgba(0, 8, 25, 0.93);
+  border: 1px solid rgba(56, 189, 248, 0.38);
+  border-radius: 50px;
+  z-index: 200;
+  box-shadow:
+    0 4px 30px rgba(0, 0, 0, 0.65),
+    0 0 20px rgba(56, 189, 248, 0.1);
+}
+
+.manual-controls.visible {
+  display: flex;
+}
+
+.controls-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--c-dim);
+  text-transform: uppercase;
+  padding-right: 6px;
+  border-right: 1px solid rgba(56, 189, 248, 0.2);
+  margin-right: 4px;
+}
+
+.ctrl-btn {
+  padding: 7px 18px;
+  background: rgba(0, 91, 187, 0.28);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 25px;
+  color: var(--c-white);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease,
+              color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ctrl-btn:hover {
+  background: rgba(0, 123, 255, 0.45);
+  border-color: var(--c-electric);
+  color: var(--c-electric);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+}
+
+.ctrl-btn:active {
+  transform: scale(0.95);
+}
+
+.ctrl-btn.ctrl-close {
+  background: rgba(80, 0, 0, 0.25);
+  border-color: rgba(255, 100, 100, 0.3);
+}
+
+.ctrl-btn.ctrl-close:hover {
+  background: rgba(180, 0, 0, 0.35);
+  border-color: rgba(255, 100, 100, 0.5);
+  color: #ff8888;
+  box-shadow: 0 0 14px rgba(255, 0, 0, 0.2);
+}
+
+/* ============================================================
+   SECCIÓN DE SALIDAS DE LA CARRERA
+   ============================================================ */
+
+.salidas-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.3rem, 0.65vh, 0.7rem);
+  width: 100%;
+}
+
+.salidas-title {
+  font-family: var(--font-display);
+  font-size: clamp(0.46rem, 0.88vw, 0.78rem);
+  font-weight: 600;
+  letter-spacing: 0.48em;
+  color: var(--c-dim);
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.salidas-row {
+  display: flex;
+  gap: clamp(0.7rem, 1.8vw, 2.5rem);
+  justify-content: center;
+  align-items: stretch;
+}
+
+/* ── Tarjeta base de cada salida ─────────────────────────── */
+.salida-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.5rem, 1vh, 1rem) clamp(1.4rem, 3.2vw, 3.5rem);
+  gap: 2px;
+
+  background: rgba(0, 8, 28, 0.80);
+  border: 1.5px solid rgba(56, 189, 248, 0.22);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  min-width: clamp(105px, 13.5vw, 200px);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Barra de acento superior */
+.salida-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 10px 10px 0 0;
+}
+
+/* Reflejo de brillo en la parte superior de la card */
+.salida-card::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 62% 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.048) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* — 5K — */
+.salida-5k {
+  border-color: rgba(56, 189, 248, 0.42);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.50),
+    0 0 20px rgba(56, 189, 248, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+.salida-5k::before {
+  background: linear-gradient(90deg, transparent, #38BDF8 35%, #38BDF8 65%, transparent);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+}
+
+/* — 10K — */
+.salida-10k {
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.50),
+    0 0 20px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+.salida-10k::before {
+  background: linear-gradient(90deg, transparent, #FFFFFF 35%, #FFFFFF 65%, transparent);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* — 1K Familiar — */
+.salida-familiar {
+  border-color: rgba(255, 196, 0, 0.40);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.50),
+    0 0 20px rgba(255, 196, 0, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+.salida-familiar::before {
+  background: linear-gradient(90deg, transparent, #FFC400 35%, #FFC400 65%, transparent);
+  box-shadow: 0 0 10px rgba(255, 196, 0, 0.65);
+}
+
+/* Hora de salida */
+.salida-hora {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.5vw, 2.7rem);
+  font-weight: 700;
+  color: var(--c-white);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+/* Separador fino entre hora y distancia */
+.salida-inner-sep {
+  width: 52%;
+  height: 1px;
+  margin: 3px 0 1px;
+  border-radius: 1px;
+  opacity: 0.38;
+}
+.salida-5k      .salida-inner-sep { background: #38BDF8; }
+.salida-10k     .salida-inner-sep { background: #FFFFFF; }
+.salida-familiar .salida-inner-sep { background: #FFC400; }
+
+/* Distancia */
+.salida-distancia {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(0.9rem, 2vw, 2.1rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+.salida-5k      .salida-distancia { color: #38BDF8; text-shadow: 0 0 14px rgba(56,189,248,0.6); }
+.salida-10k     .salida-distancia { color: #FFFFFF;  text-shadow: 0 0 14px rgba(255,255,255,0.45); }
+.salida-familiar .salida-distancia { color: #FFC400;  text-shadow: 0 0 14px rgba(255,196,0,0.55); }
+
+/* Etiqueta de categoría */
+.salida-tag {
+  font-family: var(--font-display);
+  font-size: clamp(0.4rem, 0.75vw, 0.66rem);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-silver);
+  opacity: 0.58;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   ANIMACIONES KEYFRAMES
+   ============================================================ */
+
+/* Brillo pulsante en el año del título */
+@keyframes title-glow-pulse {
+  from {
+    text-shadow:
+      0 0 12px rgba(56, 189, 248, 0.5),
+      0 0 28px rgba(56, 189, 248, 0.28);
+  }
+  to {
+    text-shadow:
+      0 0 22px rgba(56, 189, 248, 1),
+      0 0 50px rgba(56, 189, 248, 0.55),
+      0 0 90px rgba(0, 123, 255, 0.22);
+  }
+}
+
+/* Deslizamiento de la línea de velocidad */
+@keyframes speed-slide {
+  0%   { left: -75%; }
+  100% { left: 110%; }
+}
+
+/* Parpadeo de los separadores : */
+@keyframes sep-blink {
+  0%, 100% { opacity: 1;   }
+  50%       { opacity: 0.15; }
+}
+
+/* Pulso sutil de escala en el bloque de segundos */
+@keyframes seconds-beat {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.018); }
+}
+
+/* Pulso del badge cuando la carrera está en curso */
+@keyframes badge-pulse-running {
+  0%, 100% {
+    box-shadow:
+      0 0 14px rgba(0, 230, 118, 0.3),
+      0 0 30px rgba(0, 230, 118, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 28px rgba(0, 230, 118, 0.65),
+      0 0 60px rgba(0, 230, 118, 0.3);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — ADAPTACIONES PARA OTRAS RESOLUCIONES
+   El diseño principal está optimizado para 1920×1080.
+   Estas reglas garantizan que sea usable en pantallas pequeñas.
+   ============================================================ */
+
+/* Pantallas muy cortas (altura < 620px) */
+@media (max-height: 620px) {
+  .header  { height: 13vh; min-height: 70px; }
+  .footer  { height: 11vh; min-height: 50px; }
+  .counter-block {
+    height: clamp(80px, 16vh, 155px);
+  }
+  .counter-digit {
+    font-size: clamp(2.5rem, 8.5vw, 8rem);
+  }
+  .salida-card {
+    padding: 0.4rem 1.2rem;
+  }
+  .salida-hora      { font-size: clamp(0.9rem, 2vw, 1.8rem); }
+  .salida-distancia { font-size: clamp(0.75rem, 1.6vw, 1.5rem); }
+}
+
+/* Tablets y pantallas medianas (ancho < 1024px) */
+@media (max-width: 1024px) {
+  .counter-block {
+    width: clamp(85px, 20vw, 215px);
+  }
+  .counter-sep {
+    font-size: clamp(1.8rem, 6vw, 6rem);
+  }
+  .logo-group { max-width: 30vw; }
+  .sponsors   { max-width: 30vw; }
+  .salidas-row { gap: clamp(0.5rem, 1.5vw, 1.8rem); }
+  .salida-card { min-width: clamp(90px, 12vw, 170px); padding: 0.5rem 1.5rem; }
+}
+
+/* Móviles (ancho < 640px) */
+@media (max-width: 640px) {
+  .header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 1vh 3vw;
+    gap: 1vh;
+    max-height: none;
+  }
+  .header-center { order: -1; width: 100%; }
+  .logo-group    { max-width: 48vw; }
+
+  .counter-row   { gap: 0.5rem; }
+  .counter-sep   { font-size: clamp(1.5rem, 5vw, 3.5rem); }
+  .counter-block { width: clamp(72px, 20vw, 160px); }
+
+  .sponsors { max-width: 40vw; }
+
+  .salidas-row  { gap: 0.5rem; }
+  .salida-card  { min-width: clamp(80px, 28vw, 130px); padding: 0.5rem 0.8rem; }
+  .salida-hora  { font-size: clamp(0.9rem, 4vw, 1.6rem); }
+  .salida-distancia { font-size: clamp(0.75rem, 3.2vw, 1.3rem); }
+  .salida-tag   { display: none; }
+}
+
+/* Pantallas muy pequeñas: apilar los bloques */
+@media (max-width: 420px) {
+  .counter-row {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+  }
+  .counter-sep { display: none; }
+  .counter-block {
+    width: 38vw;
+    height: clamp(80px, 18vw, 120px);
+  }
+  .salidas-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .salida-card { width: 40vw; }
+}
