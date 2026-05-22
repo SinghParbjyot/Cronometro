@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrera Policía Local de Zaragoza 2026</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <!-- ============================================================
+       SCALED STAGE — 1920×1080 canvas, letterboxed to viewport
+       ============================================================ -->
+  <div class="stage" id="stage">
+    <div class="canvas" id="canvas" data-screen-label="01 Race Display">
+
+      <div class="screen">
+
+        <!-- Backdrop -->
+        <div class="bg-placeholder" aria-hidden="true"></div>
+        <div class="bg-tag">[ fondo: assets/FONDO ESQUINA.jpg ]</div>
+
+        <!-- ─── CABECERA ─── -->
+        <header class="header">
+          <div class="logo-group logo-left">
+            <div class="logo-real" title="Escudo Policía Local Zaragoza">
+              <img src="assets/ESCUDO POLICIA BLANCO.png" alt="Escudo Policía Local" />
+            </div>
+            <div class="logo-real wide" title="Policía Local Zaragoza">
+              <img src="assets/LOGO POLICIA BLANCO.png" alt="Policía Local Zaragoza" />
+            </div>
+          </div>
+
+          <div class="header-center">
+            <div class="title-wrapper">
+              <div class="title-deco-line"></div>
+              <p class="header-subtitle" id="event-subtitle">POLICÍA LOCAL DE ZARAGOZA</p>
+              <h1 class="main-title">
+                <span class="title-word" id="event-name">CARRERA</span>
+                <span class="title-sep-dot" aria-hidden="true">·</span>
+                <span class="title-year" id="event-year">2026</span>
+              </h1>
+              <div class="title-deco-line"></div>
+            </div>
+          </div>
+
+          <div class="logo-group logo-right">
+            <div class="logo-real wide" title="Ayuntamiento de Zaragoza">
+              <img src="assets/LOGO AYUNTAMIENTO ZARAGOZA.png" alt="Ayuntamiento de Zaragoza" />
+            </div>
+            <div class="logo-real" title="Cronolimits">
+              <img src="assets/LOGO CRONOLIMITS.png" alt="Cronolimits" />
+            </div>
+          </div>
+        </header>
+
+        <!-- Speed line -->
+        <div class="speed-line-wrap" aria-hidden="true">
+          <div class="speed-bar"></div>
+          <div class="speed-glow"></div>
+        </div>
+
+        <!-- ─── MAIN ─── -->
+        <main class="main">
+
+          <div class="status-area">
+            <div class="status-badge" id="status-badge">
+              <span class="status-icon" id="status-icon"></span>
+              <span id="status-text">CUENTA ATRÁS</span>
+            </div>
+          </div>
+
+          <div class="counter-panel">
+            <div class="counter-row" id="counter-row">
+              <div class="counter-block" id="block-days">
+                <div class="counter-digit" id="days">00</div>
+                <div class="counter-label">DÍAS</div>
+              </div>
+              <div class="counter-sep" aria-hidden="true">:</div>
+              <div class="counter-block">
+                <div class="counter-digit" id="hours">00</div>
+                <div class="counter-label">HORAS</div>
+              </div>
+              <div class="counter-sep" aria-hidden="true">:</div>
+              <div class="counter-block">
+                <div class="counter-digit" id="minutes">00</div>
+                <div class="counter-label">MIN</div>
+              </div>
+              <div class="counter-sep" aria-hidden="true">:</div>
+              <div class="counter-block" id="block-seconds">
+                <div class="counter-digit" id="seconds">00</div>
+                <div class="counter-label">SEG</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="race-info" id="race-info">
+            <span class="race-info-label">Fecha de inicio:</span>
+            <span class="race-info-value" id="race-date-display">24 de Mayo de 2026 · 09:00 h</span>
+          </div>
+
+          <div class="salidas-section">
+            <div class="salidas-title">Salidas de la carrera</div>
+            <div class="salidas-row">
+              <div class="salida-card salida-5k">
+                <div class="salida-hora">09:00</div>
+                <div class="salida-inner-sep"></div>
+                <div class="salida-distancia">5K</div>
+                <div class="salida-tag">Primera salida</div>
+              </div>
+              <div class="salida-card salida-10k">
+                <div class="salida-hora">09:30</div>
+                <div class="salida-inner-sep"></div>
+                <div class="salida-distancia">10K</div>
+                <div class="salida-tag">Segunda salida</div>
+              </div>
+              <div class="salida-card salida-familiar">
+                <div class="salida-hora">11:00</div>
+                <div class="salida-inner-sep"></div>
+                <div class="salida-distancia">1K · Familiar</div>
+                <div class="salida-tag">Tercera salida</div>
+              </div>
+            </div>
+          </div>
+
+        </main>
+
+        <!-- Bottom speed line -->
+        <div class="speed-line-wrap speed-line-bottom" aria-hidden="true">
+          <div class="speed-bar reverse"></div>
+          <div class="speed-glow reverse"></div>
+        </div>
+
+        <!-- ─── FOOTER ─── -->
+        <footer class="footer">
+          <div class="sponsors sponsors-left">
+            <div class="sponsor-real"><img src="assets/ESCUDO POLICIA BLANCO.png" alt="Escudo Policía" /></div>
+            <div class="sponsor-real"><img src="assets/LOGO POLICIA BLANCO.png" alt="Policía Local" /></div>
+          </div>
+          <div class="footer-center">
+            <div class="footer-brand" id="footer-brand">ZARAGOZA</div>
+            <div class="footer-message" id="footer-message">Gracias por participar</div>
+          </div>
+          <div class="sponsors sponsors-right">
+            <div class="sponsor-real"><img src="assets/LOGO AYUNTAMIENTO ZARAGOZA.png" alt="Ayuntamiento de Zaragoza" /></div>
+            <div class="sponsor-real"><img src="assets/LOGO CRONOLIMITS.png" alt="Cronolimits" /></div>
+          </div>
+        </footer>
+
+      </div><!-- /.screen -->
+    </div><!-- /.canvas -->
+  </div><!-- /.stage -->
+
+  <!-- Tweaks mount point -->
+  <div id="tweaks-root"></div>
+
+  <!-- Stage scaling (letterboxes the 1920×1080 canvas into the viewport) -->
+  <script>
+    (function () {
+      const stage = document.getElementById('stage');
+      const canvas = document.getElementById('canvas');
+      function fit() {
+        const sx = window.innerWidth  / 1920;
+        const sy = window.innerHeight / 1080;
+        const s = Math.min(sx, sy);
+        canvas.style.transform = 'scale(' + s + ')';
+      }
+      window.addEventListener('resize', fit);
+      fit();
+    })();
+  </script>
+
+  <!-- Timer logic -->
+  <script src="timer.js"></script>
+
+  <!-- Tweaks panel (loads tweak helpers + app config) -->
+  <script type="text/babel" src="tweaks-panel.jsx"></script>
+  <script type="text/babel" src="tweaks.jsx"></script>
+</body>
+</html>
